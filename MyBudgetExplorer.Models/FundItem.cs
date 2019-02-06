@@ -24,7 +24,7 @@ namespace MyBudgetExplorer.Models
     public class FundItem : ISerializable
     {
         #region Properties
-        public int Amount { get; set; }
+        public long Amount { get; set; }
         public string CategoryId { get; set; }
         public string CategoryName { get; set; }
         public DateTime Date { get; set; }
@@ -40,7 +40,7 @@ namespace MyBudgetExplorer.Models
         {
             var reader = SerializationReader.GetReader(info);
 
-            Amount = reader.ReadInt32();
+            Amount = reader.ReadInt64();
             CategoryId = reader.ReadString();
             CategoryName = reader.ReadString();
             Date = reader.ReadDateTime();

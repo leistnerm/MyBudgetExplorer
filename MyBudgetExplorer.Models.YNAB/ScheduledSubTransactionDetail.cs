@@ -23,7 +23,7 @@ namespace MyBudgetExplorer.Models.YNAB
     {
         #region Properties
         public string AccountName { get; set; }
-        public int Amount { get; set; }
+        public long Amount { get; set; }
         public string CategoryId { get; set; }
         public string CategoryName { get; set; }
         public bool Deleted { get; set; }

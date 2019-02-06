@@ -23,15 +23,15 @@ namespace MyBudgetExplorer.Models.YNAB
     public class Category : ISerializable
     {
         #region Properties
-        public int Activity { get; set; }
-        public int Balance { get; set; }
-        public int Budgeted { get; set; }
+        public long Activity { get; set; }
+        public long Balance { get; set; }
+        public long Budgeted { get; set; }
         public string CategoryGroupId { get; set; }
         public string CategoryId { get; set; }
         public bool Deleted { get; set; }
         public string GoalCreationMonth { get; set; }
         public int GoalPercentageComplete { get; set; }
-        public int GoalTarget { get; set; }
+        public long GoalTarget { get; set; }
         public string GoalTargetMonth { get; set; }
         public GoalType? GoalType { get; set; }
         public bool Hidden { get; set; }
@@ -105,16 +105,16 @@ namespace MyBudgetExplorer.Models.YNAB
         {
             var reader = SerializationReader.GetReader(info);
 
-            Activity = reader.ReadInt32();
-            Balance = reader.ReadInt32();
-            Budgeted = reader.ReadInt32();
+            Activity = reader.ReadInt64();
+            Balance = reader.ReadInt64();
+            Budgeted = reader.ReadInt64();
             CategoryGroupId = reader.ReadString();
             CategoryId = reader.ReadString();
             Deleted = reader.ReadBoolean();
             Hidden = reader.ReadBoolean();
             GoalCreationMonth = reader.ReadString();
             GoalPercentageComplete = reader.ReadInt32();
-            GoalTarget = reader.ReadInt32();
+            GoalTarget = reader.ReadInt64();
             GoalTargetMonth = reader.ReadString();
             if (reader.ReadBoolean())
                 GoalType = (GoalType)reader.ReadByte();

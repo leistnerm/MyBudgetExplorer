@@ -18,7 +18,7 @@ namespace MyBudgetExplorer.Models.YNAB
     public static class Extensions
     {
         #region Public Methods
-        public static string ToDisplay(this int d)
+        public static string ToDisplay(this long d)
         {
             return (d / 1000M).ToString("N2");
         }

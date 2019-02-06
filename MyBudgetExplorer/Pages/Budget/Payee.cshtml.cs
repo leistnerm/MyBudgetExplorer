@@ -104,7 +104,7 @@ namespace MyBudgetExplorer.Pages.Budget
 
             Transactions = Transactions.Where(t => t.Date.Year == currentDate.Year && t.Date.Month == currentDate.Month).OrderBy(t => t.Date).ThenByDescending(t => t.Amount).ToList();
 
-            var currentBalance = 0;
+            var currentBalance = 0L;
             foreach (var t in Transactions)
             {
                 currentBalance += t.Amount;
@@ -117,7 +117,7 @@ namespace MyBudgetExplorer.Pages.Budget
             public DateTime Date { get; set; }
             public string DateDisplay { get { return Date.ToShortDateString(); } }
             public string Category { get; set; }
-            public int Amount { get; set; }
+            public long Amount { get; set; }
             public string AmountDisplay { get { return Amount.ToDisplay(); } }
             public string Total { get; set; }
         }

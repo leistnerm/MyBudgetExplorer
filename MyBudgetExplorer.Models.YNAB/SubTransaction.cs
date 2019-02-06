@@ -23,7 +23,7 @@ namespace MyBudgetExplorer.Models.YNAB
     public class SubTransaction : ISerializable
     {
         #region Properties
-        public int Amount { get; set; }
+        public long Amount { get; set; }
         public string CategoryId { get; set; }
         public bool Deleted { get; set; }
         public string Memo { get; set; }
@@ -84,7 +84,7 @@ namespace MyBudgetExplorer.Models.YNAB
         {
             var reader = SerializationReader.GetReader(info);
 
-            Amount = reader.ReadInt32();
+            Amount = reader.ReadInt64();
             CategoryId = reader.ReadString();
             Deleted = reader.ReadBoolean();
             Memo = reader.ReadString();

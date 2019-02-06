@@ -21,13 +21,13 @@ namespace MyBudgetExplorer.Models.YNAB
     public class MonthSummary
     {
         #region Properties
-        public int? Activity { get; set; }
+        public long? Activity { get; set; }
         public int? AgeOfMoney { get; set; }
-        public int? Budgeted { get; set; }
-        public int? Income { get; set; }
+        public long? Budgeted { get; set; }
+        public long? Income { get; set; }
         public DateTime Month { get; set; }
         public string Note { get; set; }
-        public int? ToBeBudgeted { get; set; }
+        public long? ToBeBudgeted { get; set; }
         #endregion
 
         #region Public Methods

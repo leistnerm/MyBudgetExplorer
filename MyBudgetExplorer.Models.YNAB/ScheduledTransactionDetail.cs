@@ -24,7 +24,7 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Properties
         public string AccountId { get; set; }
         public string AccountName { get; set; }
-        public int Amount { get; set; }
+        public long Amount { get; set; }
         public string CategoryId { get; set; }
         public string CategoryName { get; set; }
         public DateTime DateFirst { get; set; }

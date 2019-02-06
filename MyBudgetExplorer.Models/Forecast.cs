@@ -58,7 +58,7 @@ namespace MyBudgetExplorer.Models
         public IDictionary<string, List<FundStatus>> MonthFundStatus { get; } = new Dictionary<string, List<FundStatus>>();
         public IList<MonthDetail> Months { get; set; } = new List<MonthDetail>();
         public string Name { get; set; }
-        private IDictionary<DateTime, Dictionary<string, int>> OriginalBudgeted { get; set; } = new Dictionary<DateTime, Dictionary<string, int>>();
+        private IDictionary<DateTime, Dictionary<string, long>> OriginalBudgeted { get; set; } = new Dictionary<DateTime, Dictionary<string, long>>();
         public IList<PayeeLocation> PayeeLocations { get; set; } = new List<PayeeLocation>();
         public IList<Payee> Payees { get; set; } = new List<Payee>();
         public string ProgramCategoryGroupId { get { return "4faac58a-7a62-448c-b56c-6c722c6cb6b7"; } }
@@ -112,7 +112,7 @@ namespace MyBudgetExplorer.Models
                 #region Record original amounts budgeted
                 foreach (var month in Months)
                 {
-                    OriginalBudgeted.Add(month.Month, new Dictionary<string, int>());
+                    OriginalBudgeted.Add(month.Month, new Dictionary<string, long>());
                     foreach (var cat in month.Categories)
                         OriginalBudgeted[month.Month].Add(cat.CategoryId, cat.Budgeted);
                 }
@@ -209,7 +209,7 @@ namespace MyBudgetExplorer.Models
         {
             return IncomeFunding[transactionId];
         }
-        public int GetOriginalBudgeted(DateTime month, string categoryId)
+        public long GetOriginalBudgeted(DateTime month, string categoryId)
         {
             if (!OriginalBudgeted.ContainsKey(month))
                 return 0;
@@ -227,7 +227,7 @@ namespace MyBudgetExplorer.Models
 
             IncomeFunding[transactionId].Add(funding);
         }
-        private void AdjustCategoryBalances(DateTime currentMonth, string categoryId, int amount)
+        private void AdjustCategoryBalances(DateTime currentMonth, string categoryId, long amount)
         {
             var masterCategory = Categories.SingleOrDefault(c => c.CategoryId == categoryId);
             if (masterCategory != null)
@@ -344,7 +344,7 @@ namespace MyBudgetExplorer.Models
                                 continue;
                             if (!scenario.IsExactAmount)
                             {
-                                item.Amount = Convert.ToInt32(decimal.Multiply(item.Amount, decimal.Divide(100M + decimal.Divide(scenario.Amount, 1000), 100)));
+                                item.Amount = Convert.ToInt64(decimal.Multiply(item.Amount, decimal.Divide(100M + decimal.Divide(scenario.Amount, 1000), 100)));
                             }
                             else
                             {
@@ -370,7 +370,7 @@ namespace MyBudgetExplorer.Models
                             if (!scenario.IsExactAmount)
                             {
                                 var previous = item.Amount;
-                                item.Amount = Convert.ToInt32(decimal.Multiply(item.Amount, decimal.Divide(100M + decimal.Divide(scenario.Amount, 1000), 100)));
+                                item.Amount = Convert.ToInt64(decimal.Multiply(item.Amount, decimal.Divide(100M + decimal.Divide(scenario.Amount, 1000), 100)));
                                 var diff = item.Amount - previous;
                                 var parent = ForecastItems.Single(f => f.TransactionId == item.TransactionId && f.SubTransactionId == null);
                                 parent.Amount += diff;
@@ -397,7 +397,7 @@ namespace MyBudgetExplorer.Models
                 AWSXRayRecorder.Instance.EndSubsegment();
             }
         }
-        private int CalculateOverspent(DateTime month)
+        private long CalculateOverspent(DateTime month)
         {
             var currentMonth = Months.Single(m => m.Month == month);
             var previousMonth = Months.SingleOrDefault(m => m.Month == month.AddMonths(-1));
@@ -472,7 +472,6 @@ namespace MyBudgetExplorer.Models
                         TransferAccountId = se.TransferAccountId,
                         IsSplit = false,
                         PayeeId = se.PayeeId,
-                        PayeeName = Payees.Single(p => p.PayeeId == se.PayeeId).Name,
                         CategoryId = se.CategoryId,
                         CategoryName = "Split",
                         Date = se.DateNext,
@@ -481,6 +480,11 @@ namespace MyBudgetExplorer.Models
                         Amount = se.Amount,
                         Funded = 0
                     };
+                    var payee = Payees.SingleOrDefault(p => p.PayeeId == se.PayeeId);
+                    if (payee != null)
+                        forecastItem.PayeeName = payee.Name;
+                    else
+                        forecastItem.PayeeName = "[Unknown Payee]";
 
                     // Get the category for the scheduled transaction.  Split transactions will return null.
                     var seCategory = seMonth.Categories.SingleOrDefault(c => c.CategoryId == se.CategoryId);
@@ -549,7 +553,7 @@ namespace MyBudgetExplorer.Models
                                     if (remaining > 0)
                                     {
                                         remaining *= -1;
-                                        var perTime = Convert.ToInt32(Math.Floor(Decimal.Divide(remaining, dates.Length)));
+                                        var perTime = Convert.ToInt64(Math.Floor(Decimal.Divide(remaining, dates.Length)));
                                         foreach (var day in dates)
                                         {
                                             var result = new ForecastItem
@@ -584,7 +588,7 @@ namespace MyBudgetExplorer.Models
                                         if (remaining > 0)
                                         {
                                             remaining *= -1;
-                                            var perTime = Convert.ToInt32(Math.Floor(Decimal.Divide(remaining, dates.Length)));
+                                            var perTime = Convert.ToInt64(Math.Floor(Decimal.Divide(remaining, dates.Length)));
                                             foreach (var day in projected.Days)
                                             {
                                                 var result = new ForecastItem
@@ -675,13 +679,13 @@ namespace MyBudgetExplorer.Models
             {
                 #region Set initial funding
                 // Get current category available.
-                var balances = new List<Tuple<DateTime, string, int>>();
+                var balances = new List<Tuple<DateTime, string, long>>();
                 foreach (var month in Months.Where(m => m.Month >= CurrentMonthStart))
-                    balances.AddRange(month.Categories.Select(c => new Tuple<DateTime, string, int>(month.Month, c.CategoryId, c.Balance)));
+                    balances.AddRange(month.Categories.Select(c => new Tuple<DateTime, string, long>(month.Month, c.CategoryId, c.Balance)));
                 // Get current category budgeted.
-                var budgeted = new List<Tuple<DateTime, string, int>>();
+                var budgeted = new List<Tuple<DateTime, string, long>>();
                 foreach (var month in Months.Where(m => m.Month >= CurrentMonthStart))
-                    budgeted.AddRange(month.Categories.Select(c => new Tuple<DateTime, string, int>(month.Month, c.CategoryId, c.Budgeted)));
+                    budgeted.AddRange(month.Categories.Select(c => new Tuple<DateTime, string, long>(month.Month, c.CategoryId, c.Budgeted)));
                 // Set funding.
                 foreach (var item in ForecastItems)
                 {
@@ -694,7 +698,7 @@ namespace MyBudgetExplorer.Models
                         var budget = budgeted.SingleOrDefault(b => b.Item1 == monthDate && b.Item2 == item.CategoryId);
                         if (budget == null)
                             continue;
-                        var adjustment = 0;
+                        var adjustment = 0L;
                         if (budget.Item3 + item.Remaining >= 0)
                         {
                             adjustment += item.Remaining;
@@ -709,7 +713,7 @@ namespace MyBudgetExplorer.Models
                         {
                             var tuple = budgeted[i];
                             if (tuple.Item1 == monthDate && tuple.Item2 == item.CategoryId)
-                                budgeted[i] = new Tuple<DateTime, string, int>(tuple.Item1, tuple.Item2, tuple.Item3 + adjustment);
+                                budgeted[i] = new Tuple<DateTime, string, long>(tuple.Item1, tuple.Item2, tuple.Item3 + adjustment);
                         }
                     }
                     else if (item.ForecastItemType != ForecastItemType.ProjectedSpending)
@@ -718,7 +722,7 @@ namespace MyBudgetExplorer.Models
                         var balance = balances.SingleOrDefault(b => b.Item1 == monthDate && b.Item2 == item.CategoryId);
                         if (balance == null)
                             continue;
-                        var adjustment = 0;
+                        var adjustment = 0L;
                         if (balance.Item3 + item.Remaining >= 0)
                         {
                             adjustment += item.Remaining;
@@ -733,7 +737,7 @@ namespace MyBudgetExplorer.Models
                         {
                             var tuple = balances[i];
                             if (tuple.Item1 >= monthDate && tuple.Item2 == item.CategoryId)
-                                balances[i] = new Tuple<DateTime, string, int>(tuple.Item1, tuple.Item2, tuple.Item3 + adjustment);
+                                balances[i] = new Tuple<DateTime, string, long>(tuple.Item1, tuple.Item2, tuple.Item3 + adjustment);
                         }
                     }
                 }
@@ -776,7 +780,7 @@ namespace MyBudgetExplorer.Models
                         t.ImportId = "projected";
                         var availableAmount = Months.Single(m => m.Month == itemMonthDate).Categories.Single(c => c.CategoryId == item.CategoryId).Balance;
                         var numberRemaining = ForecastItems.Where(f => f.ForecastItemType == ForecastItemType.ProjectedSpending && f.CategoryId == item.CategoryId && f.Date >= item.Date && f.Date < itemMonthDate.AddMonths(1)).Count();
-                        t.Amount = Convert.ToInt32(decimal.Divide(availableAmount, numberRemaining)) * -1;
+                        t.Amount = Convert.ToInt64(decimal.Divide(availableAmount, numberRemaining)) * -1;
                     }
                     Transactions.Insert(0, t);
 
@@ -838,7 +842,7 @@ namespace MyBudgetExplorer.Models
                                 if (tbb <= 0)
                                     break;
 
-                                var budget = 0;
+                                var budget = 0L;
                                 if (tbb + next.Remaining >= 0)
                                 {
                                     tbb += next.Remaining;
@@ -1027,7 +1031,7 @@ namespace MyBudgetExplorer.Models
             MonthFundStatus = reader.ReadDictionary<string, List<FundStatus>>();
             Months = reader.ReadList<MonthDetail>();
             Name = reader.ReadString();
-            OriginalBudgeted = reader.ReadDictionary<DateTime, Dictionary<string, int>>();
+            OriginalBudgeted = reader.ReadDictionary<DateTime, Dictionary<string, long>>();
             PayeeLocations = reader.ReadList<PayeeLocation>();
             Payees = reader.ReadList<Payee>();
             ScheduledSubTransactions = reader.ReadList<ScheduledSubTransaction>();

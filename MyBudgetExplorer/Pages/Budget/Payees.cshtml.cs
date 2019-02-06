@@ -74,10 +74,10 @@ namespace MyBudgetExplorer.Pages.Budget
                     var previous = forecast.Transactions.Where(t => t.PayeeId == p.PayeeId)
                         .Where(t => t.Date < forecast.CurrentMonthStart)
                         .Sum(t => t.Amount);
-                    payee.Average = Convert.ToInt32(decimal.Divide(previous, monthCount)).ToDisplay();
+                    payee.Average = Convert.ToInt64(decimal.Divide(previous, monthCount)).ToDisplay();
                 }
                 else
-                    payee.Average = 0.ToDisplay();
+                    payee.Average = 0L.ToDisplay();
 
                 Payees.Add(payee);
             }

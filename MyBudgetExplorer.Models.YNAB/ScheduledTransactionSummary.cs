@@ -24,7 +24,7 @@ namespace MyBudgetExplorer.Models.YNAB
     {
         #region Properties
         public string AccountId { get; set; }
-        public int Amount { get; set; }
+        public long Amount { get; set; }
         public string CategoryId { get; set; }
         public DateTime DateFirst { get; set; }
         public DateTime DateNext { get; set; }
@@ -98,7 +98,7 @@ namespace MyBudgetExplorer.Models.YNAB
             var reader = SerializationReader.GetReader(info);
 
             AccountId = reader.ReadString();
-            Amount = reader.ReadInt32();
+            Amount = reader.ReadInt64();
             CategoryId = reader.ReadString();
             DateFirst = reader.ReadDateTime();
             DateNext = reader.ReadDateTime();

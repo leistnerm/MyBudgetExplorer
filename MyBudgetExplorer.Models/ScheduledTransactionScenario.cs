@@ -24,7 +24,7 @@ namespace MyBudgetExplorer.Models
     public class ScheduledTransactionScenario : ISerializable
     {
         #region Properties
-        public int Amount { get; set; }
+        public long Amount { get; set; }
         public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
         public Frequency Frequency { get; set; }
@@ -58,7 +58,7 @@ namespace MyBudgetExplorer.Models
         {
             var reader = SerializationReader.GetReader(info);
 
-            Amount = reader.ReadInt32();
+            Amount = reader.ReadInt64();
             BeginDate = reader.ReadDateTime();
             EndDate = reader.ReadDateTime();
             Frequency = (Frequency)reader.ReadByte();

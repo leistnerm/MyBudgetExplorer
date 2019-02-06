@@ -24,10 +24,10 @@ namespace MyBudgetExplorer.Models
     public class FundStatus : ISerializable
     {
         #region Properties
-        public int Amount { get; set; }
+        public long Amount { get; set; }
         public string CategoryName { get; set; }
         public DateTime Date { get; set; }
-        public int Funded { get; set; }
+        public long Funded { get; set; }
         public string Id { get; set; }
         public string PayeeName { get; set; }
         #endregion
@@ -41,10 +41,10 @@ namespace MyBudgetExplorer.Models
         {
             var reader = SerializationReader.GetReader(info);
 
-            Amount = reader.ReadInt32();
+            Amount = reader.ReadInt64();
             CategoryName = reader.ReadString();
             Date = reader.ReadDateTime();
-            Funded = reader.ReadInt32();
+            Funded = reader.ReadInt64();
             Id = reader.ReadString();
             PayeeName = reader.ReadString();
         }

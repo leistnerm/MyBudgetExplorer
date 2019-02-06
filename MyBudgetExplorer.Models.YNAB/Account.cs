@@ -24,8 +24,8 @@ namespace MyBudgetExplorer.Models.YNAB
     {
         #region Properties
         public string AccountId { get; set; }
-        public int Balance { get; set; }
-        public int ClearedBalance { get; set; }
+        public long Balance { get; set; }
+        public long ClearedBalance { get; set; }
         public bool Closed { get; set; }
         public bool Deleted { get; set; }
         public string Name { get; set; }
@@ -33,7 +33,7 @@ namespace MyBudgetExplorer.Models.YNAB
         public bool OnBudget { get; set; }
         public string TransferPayeeId { get; set; }
         public AccountType Type { get; set; }
-        public int UnclearedBalance { get; set; }
+        public long UnclearedBalance { get; set; }
         #endregion
 
         #region Constructors
@@ -77,8 +77,8 @@ namespace MyBudgetExplorer.Models.YNAB
             var reader = SerializationReader.GetReader(info);
 
             AccountId = reader.ReadString();
-            Balance = reader.ReadInt32();
-            ClearedBalance = reader.ReadInt32();
+            Balance = reader.ReadInt64();
+            ClearedBalance = reader.ReadInt64();
             Closed = reader.ReadBoolean();
             Deleted = reader.ReadBoolean();
             Name = reader.ReadString();
@@ -86,7 +86,7 @@ namespace MyBudgetExplorer.Models.YNAB
             OnBudget = reader.ReadBoolean();
             TransferPayeeId = reader.ReadString();
             Type = (AccountType)reader.ReadByte();
-            UnclearedBalance = reader.ReadInt32();
+            UnclearedBalance = reader.ReadInt64();
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)

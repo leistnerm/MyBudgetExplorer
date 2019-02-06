@@ -24,14 +24,14 @@ namespace MyBudgetExplorer.Models.YNAB
     public class MonthDetail : ISerializable
     {
         #region Properties
-        public int? Activity { get; set; }
-        public int? AgeOfMoney { get; set; }
-        public int? Budgeted { get; set; }
+        public long? Activity { get; set; }
+        public long? AgeOfMoney { get; set; }
+        public long? Budgeted { get; set; }
         public IList<Category> Categories { get; set; } = new List<Category>();
-        public int? Income { get; set; }
+        public long? Income { get; set; }
         public DateTime Month { get; set; }
         public string Note { get; set; }
-        public int? ToBeBudgeted { get; set; }
+        public long? ToBeBudgeted { get; set; }
         #endregion
 
         #region Constructors
@@ -99,18 +99,18 @@ namespace MyBudgetExplorer.Models.YNAB
             var reader = SerializationReader.GetReader(info);
 
             if (reader.ReadBoolean())
-                Activity = reader.ReadInt32();
+                Activity = reader.ReadInt64();
             if (reader.ReadBoolean())
-                AgeOfMoney = reader.ReadInt32();
+                AgeOfMoney = reader.ReadInt64();
             if (reader.ReadBoolean())
-                Budgeted = reader.ReadInt32();
+                Budgeted = reader.ReadInt64();
             Categories = reader.ReadList<Category>();
             if (reader.ReadBoolean())
-                Income = reader.ReadInt32();
+                Income = reader.ReadInt64();
             Month = reader.ReadDateTime();
             Note = reader.ReadString();
             if (reader.ReadBoolean())
-                ToBeBudgeted = reader.ReadInt32();
+                ToBeBudgeted = reader.ReadInt64();
         }
         #endregion
     }

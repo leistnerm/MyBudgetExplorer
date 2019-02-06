@@ -26,7 +26,7 @@ namespace MyBudgetExplorer.Models
     {
         #region Properties
         public string AccountId { get; set; }
-        public int Amount { get; set; }
+        public long Amount { get; set; }
         public string CategoryId { get; set; }
         public IList<int> Days { get; set; } = new List<int>();
         public bool IsEnabled { get; set; }
@@ -58,7 +58,7 @@ namespace MyBudgetExplorer.Models
             var reader = SerializationReader.GetReader(info);
 
             AccountId = reader.ReadString();
-            Amount = reader.ReadInt32();
+            Amount = reader.ReadInt64();
             CategoryId = reader.ReadString();
             Days = reader.ReadList<int>();
             IsEnabled = reader.ReadBoolean();

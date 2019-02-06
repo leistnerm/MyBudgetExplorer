@@ -95,7 +95,7 @@ namespace MyBudgetExplorer.Pages.Budget
                     }
                 }
             }
-            var budgetedThisMonth = 0;
+            var budgetedThisMonth = 0L;
             // Budgeted Income
             foreach (var t in forecast.Transactions.Where(t => currentDate <= t.Date && t.Date < currentDate.AddMonths(1) && t.ImportId == "scheduled" && t.Amount > 0))
             {
@@ -168,7 +168,7 @@ namespace MyBudgetExplorer.Pages.Budget
 
             Transactions = Transactions.OrderBy(t => t.Date).ThenByDescending(t => t.Amount).ToList();
 
-            var currentBalance = 0;
+            var currentBalance = 0L;
             foreach (var t in Transactions)
             {
                 currentBalance += t.Amount;
@@ -184,7 +184,7 @@ namespace MyBudgetExplorer.Pages.Budget
             public DateTime Date { get; set; }
             public string DateDisplay { get { return Date.ToShortDateString(); } }
             public string Payee { get; set; }
-            public int Amount { get; set; }
+            public long Amount { get; set; }
             public string AmountDisplay { get { return Amount.ToDisplay(); } }
             public string Available { get; set; }
         }

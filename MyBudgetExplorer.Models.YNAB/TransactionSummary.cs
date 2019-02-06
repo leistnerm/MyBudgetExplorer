@@ -24,7 +24,7 @@ namespace MyBudgetExplorer.Models.YNAB
     {
         #region Properties
         public string AccountId { get; set; }
-        public int Amount { get; set; }
+        public long Amount { get; set; }
         public bool Approved { get; set; }
         public string CategoryId { get; set; }
         public TransactionStatus Cleared { get; set; }
@@ -104,7 +104,7 @@ namespace MyBudgetExplorer.Models.YNAB
             var reader = SerializationReader.GetReader(info);
 
             AccountId = reader.ReadString();
-            Amount = reader.ReadInt32();
+            Amount = reader.ReadInt64();
             Approved = reader.ReadBoolean();
             CategoryId = reader.ReadString();
             Cleared = (TransactionStatus)reader.ReadByte();

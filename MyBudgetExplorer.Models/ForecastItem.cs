@@ -25,18 +25,18 @@ namespace MyBudgetExplorer.Models
     {
         #region Properties
         public string AccountId { get; set; }
-        public int Amount { get; set; }
+        public long Amount { get; set; }
         public string CategoryId { get; set; }
         public string CategoryName { get; set; }
         public DateTime Date { get; set; }
         public FlagColor? FlagColor { get; set; }
         public ForecastItemType ForecastItemType { get; set; }
-        public int Funded { get; set; }
+        public long Funded { get; set; }
         public bool IsSplit { get; set; }
         public string Memo { get; set; }
         public string PayeeId { get; set; }
         public string PayeeName { get; set; }
-        public int Remaining { get { return Amount + Funded; } }
+        public long Remaining { get { return Amount + Funded; } }
         public string ScheduledSubTransactionId { get; set; }
         public string ScheduledTransactionId { get; set; }
         public string SubTransactionId { get; set; }
@@ -54,14 +54,14 @@ namespace MyBudgetExplorer.Models
             var reader = SerializationReader.GetReader(info);
 
             AccountId = reader.ReadString();
-            Amount = reader.ReadInt32();
+            Amount = reader.ReadInt64();
             CategoryId = reader.ReadString();
             CategoryName = reader.ReadString();
             Date = reader.ReadDateTime();
             if (reader.ReadBoolean())
                 FlagColor = (FlagColor)reader.ReadByte();
             ForecastItemType = (ForecastItemType)reader.ReadByte();
-            Funded = reader.ReadInt32();
+            Funded = reader.ReadInt64();
             IsSplit = reader.ReadBoolean();
             Memo = reader.ReadString();
             PayeeId = reader.ReadString();
