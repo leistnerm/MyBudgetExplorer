@@ -325,6 +325,9 @@ namespace MyBudgetExplorer.Models
             AWSXRayRecorder.Instance.BeginSubsegment("MyBudgetExplorer.Models.Forecast.ApplyScenarios()");
             try
             {
+                if (ForecastItems.Count == 0)
+                    return;
+
                 var maxDate = ForecastItems.Max(f => f.Date).AddDays(1);
                 foreach (var scenario in Settings.ScheduledTransactionScenarios.OrderBy(s => s.BeginDate))
                 {
