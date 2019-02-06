@@ -85,7 +85,7 @@ namespace MyBudgetExplorer
                     OnTicketReceived = context =>
                     {
                         context.Properties.IsPersistent = true;
-                        context.Properties.ExpiresUtc = DateTimeOffset.UtcNow.AddHours(2);
+                        context.Properties.ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(90);
                         return Task.FromResult(0);
                     }
                 };
