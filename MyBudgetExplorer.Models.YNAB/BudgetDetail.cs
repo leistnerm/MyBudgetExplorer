@@ -50,48 +50,57 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static BudgetDetail Load(dynamic d)
         {
-            var result = new BudgetDetail
+            try
             {
-                BudgetId = d.id,
-                CurrencyFormat = CurrencyFormat.Load(d.currency_format),
-                DateFormat = DateFormat.Load(d.date_format),
-                FirstMonth = d.first_month,
-                LastModifiedOn = d.last_modified_on,
-                LastMonth = d.last_month,
-                Name = d.name,
-            };
+                var result = new BudgetDetail
+                {
+                    BudgetId = d.id,
+                    CurrencyFormat = CurrencyFormat.Load(d.currency_format),
+                    DateFormat = DateFormat.Load(d.date_format),
+                    FirstMonth = d.first_month,
+                    LastModifiedOn = d.last_modified_on,
+                    LastMonth = d.last_month,
+                    Name = d.name,
+                };
 
-            foreach (var a in d.accounts)
-                result.Accounts.Add(Account.Load(a));
+                foreach (var a in d.accounts)
+                    result.Accounts.Add(Account.Load(a));
 
-            foreach (var p in d.payees)
-                result.Payees.Add(Payee.Load(p));
+                foreach (var p in d.payees)
+                    result.Payees.Add(Payee.Load(p));
 
-            foreach (var l in d.payee_locations)
-                result.PayeeLocations.Add(PayeeLocation.Load(l));
+                foreach (var l in d.payee_locations)
+                    result.PayeeLocations.Add(PayeeLocation.Load(l));
 
-            foreach (var g in d.category_groups)
-                result.CategoryGroups.Add(CategoryGroup.Load(g));
+                foreach (var g in d.category_groups)
+                    result.CategoryGroups.Add(CategoryGroup.Load(g));
 
-            foreach (var c in d.categories)
-                result.Categories.Add(Category.Load(c));
+                foreach (var c in d.categories)
+                    result.Categories.Add(Category.Load(c));
 
-            foreach (var m in d.months)
-                result.Months.Add(MonthDetail.Load(m));
+                foreach (var m in d.months)
+                    result.Months.Add(MonthDetail.Load(m));
 
-            foreach (var t in d.transactions)
-                result.Transactions.Add(TransactionSummary.Load(t));
+                foreach (var t in d.transactions)
+                    result.Transactions.Add(TransactionSummary.Load(t));
 
-            foreach (var s in d.subtransactions)
-                result.SubTransactions.Add(SubTransaction.Load(s));
+                foreach (var s in d.subtransactions)
+                    result.SubTransactions.Add(SubTransaction.Load(s));
 
-            foreach (var s in d.scheduled_transactions)
-                result.ScheduledTransactions.Add(ScheduledTransactionSummary.Load(s));
+                foreach (var s in d.scheduled_transactions)
+                    result.ScheduledTransactions.Add(ScheduledTransactionSummary.Load(s));
 
-            foreach (var s in d.scheduled_subtransactions)
-                result.ScheduledSubTransactions.Add(ScheduledSubTransaction.Load(s));
+                foreach (var s in d.scheduled_subtransactions)
+                    result.ScheduledSubTransactions.Add(ScheduledSubTransaction.Load(s));
 
-            return result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
 

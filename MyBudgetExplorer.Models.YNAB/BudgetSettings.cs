@@ -28,11 +28,20 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static BudgetSettings Load(dynamic d)
         {
-            return new BudgetSettings
+            try
             {
-                CurrencyFormat = CurrencyFormat.Load(d.currency_format),
-                DateFormat = DateFormat.Load(d.date_format)
-            };
+                return new BudgetSettings
+                {
+                    CurrencyFormat = CurrencyFormat.Load(d.currency_format),
+                    DateFormat = DateFormat.Load(d.date_format)
+                };
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

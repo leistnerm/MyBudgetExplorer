@@ -28,10 +28,19 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static AccountsWrapper Load(dynamic d)
         {
-            var result = new AccountsWrapper();
-            foreach (var a in d.accounts)
-                result.Accounts.Add(Account.Load(a));
-            return result;
+            try
+            {
+                var result = new AccountsWrapper();
+                foreach (var a in d.accounts)
+                    result.Accounts.Add(Account.Load(a));
+                return result;
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

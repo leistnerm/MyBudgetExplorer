@@ -1,4 +1,4 @@
-﻿/* 
+﻿/*
  * Copyright 2019 Mark D. Leistner
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,10 +27,19 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static PayeeLocationWrapper Load(dynamic d)
         {
-            return new PayeeLocationWrapper
+            try
             {
-                PayeeLocation = PayeeLocation.Load(d.payee_location)
-            };
+                return new PayeeLocationWrapper
+                {
+                    PayeeLocation = PayeeLocation.Load(d.payee_location)
+                };
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

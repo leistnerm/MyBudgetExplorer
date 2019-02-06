@@ -27,10 +27,19 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static UserWrapper Load(dynamic d)
         {
-            return new UserWrapper
+            try
             {
-                User = User.Load(d.user)
-            };
+                return new UserWrapper
+                {
+                    User = User.Load(d.user)
+                };
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

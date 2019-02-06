@@ -36,14 +36,23 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static Payee Load(dynamic d)
         {
-            var payee = new Payee
+            try
             {
-                Deleted = d.deleted,
-                Name = d.name,
-                PayeeId = d.id,
-                TransferAccountId = d.transfer_account_id,
-            };
-            return payee;
+                var payee = new Payee
+                {
+                    Deleted = d.deleted,
+                    Name = d.name,
+                    PayeeId = d.id,
+                    TransferAccountId = d.transfer_account_id,
+                };
+                return payee;
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
 

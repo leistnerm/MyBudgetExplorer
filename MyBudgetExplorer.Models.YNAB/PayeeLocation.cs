@@ -37,15 +37,24 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static PayeeLocation Load(dynamic d)
         {
-            var location = new PayeeLocation
+            try
             {
-                Deleted = d.deleted,
-                Latitude = d.latitude,
-                Longitude = d.longitude,
-                PayeeId = d.payee_id,
-                PayeeLocationId = d.id,
-            };
-            return location;
+                var location = new PayeeLocation
+                {
+                    Deleted = d.deleted,
+                    Latitude = d.latitude,
+                    Longitude = d.longitude,
+                    PayeeId = d.payee_id,
+                    PayeeLocationId = d.id,
+                };
+                return location;
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
 

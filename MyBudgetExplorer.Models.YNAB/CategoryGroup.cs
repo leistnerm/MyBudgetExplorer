@@ -36,13 +36,22 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static CategoryGroup Load(dynamic d)
         {
-            return new CategoryGroup
+            try
             {
-                CategoryGroupId = d.id,
-                Deleted = d.deleted,
-                Hidden = d.hidden,
-                Name = d.name,
-            };
+                return new CategoryGroup
+                {
+                    CategoryGroupId = d.id,
+                    Deleted = d.deleted,
+                    Hidden = d.hidden,
+                    Name = d.name,
+                };
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
 

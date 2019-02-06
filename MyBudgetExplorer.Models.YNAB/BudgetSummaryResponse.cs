@@ -25,12 +25,21 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static BudgetSummaryResponse Load(dynamic b)
+        public static BudgetSummaryResponse Load(dynamic d)
         {
-            return new BudgetSummaryResponse
+            try
             {
-                Data = BudgetSummaryWrapper.Load(b.data)
-            };
+                return new BudgetSummaryResponse
+                {
+                    Data = BudgetSummaryWrapper.Load(d.data)
+                };
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

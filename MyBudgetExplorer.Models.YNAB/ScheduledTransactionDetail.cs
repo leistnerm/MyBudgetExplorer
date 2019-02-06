@@ -43,27 +43,36 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static ScheduledTransactionDetail Load(dynamic d)
         {
-            var result = new ScheduledTransactionDetail
+            try
             {
-                AccountId = d.account_id,
-                AccountName = d.account_name,
-                Amount = d.amount,
-                CategoryId = d.category_id,
-                CategoryName = d.category_name,
-                DateFirst = d.date_first,
-                DateNext = d.date_next,
-                Deleted = d.deleted,
-                FlagColor = d.flag_color,
-                Frequency = d.frequency,
-                Memo = d.memo,
-                PayeeId = d.payee_id,
-                PayeeName = d.payee_name,
-                ScheduledTransactionId = d.id,
-                TransferAccountId = d.transfer_account_id,
-            };
-            foreach (var s in d.subtransactions)
-                result.SubTransactions.Add(ScheduledSubTransaction.Load(s));
-            return result;
+                var result = new ScheduledTransactionDetail
+                {
+                    AccountId = d.account_id,
+                    AccountName = d.account_name,
+                    Amount = d.amount,
+                    CategoryId = d.category_id,
+                    CategoryName = d.category_name,
+                    DateFirst = d.date_first,
+                    DateNext = d.date_next,
+                    Deleted = d.deleted,
+                    FlagColor = d.flag_color,
+                    Frequency = d.frequency,
+                    Memo = d.memo,
+                    PayeeId = d.payee_id,
+                    PayeeName = d.payee_name,
+                    ScheduledTransactionId = d.id,
+                    TransferAccountId = d.transfer_account_id,
+                };
+                foreach (var s in d.subtransactions)
+                    result.SubTransactions.Add(ScheduledSubTransaction.Load(s));
+                return result;
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

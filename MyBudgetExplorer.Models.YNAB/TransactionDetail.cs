@@ -45,30 +45,39 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static TransactionDetail Load(dynamic d)
         {
-            var result = new TransactionDetail
+            try
             {
-                AccountId = d.account_id,
-                AccountName = d.account_name,
-                Amount = d.amount,
-                Approved = d.approved,
-                CategoryId = d.category_id,
-                CategoryName = d.category_name,
-                Cleared = d.cleared,
-                Date = d.date,
-                Deleted = d.deleted,
-                FlagColor = d.flag_color,
-                ImportId = d.import_id,
-                Memo = d.memo,
-                PayeeId = d.payee_id,
-                PayeeName = d.payee_name,
-                TransactionId = d.id,
-                TransferAccountId = d.transfer_account_id,
-                TransferTransactionId = d.transfer_transaction_id,
-            };
-            foreach (var s in d.subtransactions)
-                result.SubTransactions.Add(SubTransaction.Load(s));
+                var result = new TransactionDetail
+                {
+                    AccountId = d.account_id,
+                    AccountName = d.account_name,
+                    Amount = d.amount,
+                    Approved = d.approved,
+                    CategoryId = d.category_id,
+                    CategoryName = d.category_name,
+                    Cleared = d.cleared,
+                    Date = d.date,
+                    Deleted = d.deleted,
+                    FlagColor = d.flag_color,
+                    ImportId = d.import_id,
+                    Memo = d.memo,
+                    PayeeId = d.payee_id,
+                    PayeeName = d.payee_name,
+                    TransactionId = d.id,
+                    TransferAccountId = d.transfer_account_id,
+                    TransferTransactionId = d.transfer_transaction_id,
+                };
+                foreach (var s in d.subtransactions)
+                    result.SubTransactions.Add(SubTransaction.Load(s));
 
-            return result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

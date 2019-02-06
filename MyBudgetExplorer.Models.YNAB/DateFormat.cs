@@ -27,10 +27,19 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static DateFormat Load(dynamic d)
         {
-            return new DateFormat
+            try
             {
-                Format = d.format
-            };
+                return new DateFormat
+                {
+                    Format = d.format
+                };
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

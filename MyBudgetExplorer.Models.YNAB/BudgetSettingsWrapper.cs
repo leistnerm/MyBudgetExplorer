@@ -27,10 +27,19 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static BudgetSettingsWrapper Load(dynamic d)
         {
-            return new BudgetSettingsWrapper
+            try
             {
-                Settings = BudgetSettings.Load(d.settings)
-            };
+                return new BudgetSettingsWrapper
+                {
+                    Settings = BudgetSettings.Load(d.settings)
+                };
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

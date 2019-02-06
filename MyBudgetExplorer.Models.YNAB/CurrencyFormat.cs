@@ -34,17 +34,26 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static CurrencyFormat Load(dynamic d)
         {
-            return new CurrencyFormat
+            try
             {
-                CurrencySymbol = d.currency_symbol,
-                DecimalDigits = d.decimal_digits,
-                DecimalSeparator = d.decimal_separator,
-                DisplaySymbol = d.display_symbol,
-                ExampleFormat = d.example_format,
-                GroupSeparator = d.group_separator,
-                IsoCode = d.iso_code,
-                SymbolFirst = d.symbol_first,
-            };
+                return new CurrencyFormat
+                {
+                    CurrencySymbol = d.currency_symbol,
+                    DecimalDigits = d.decimal_digits,
+                    DecimalSeparator = d.decimal_separator,
+                    DisplaySymbol = d.display_symbol,
+                    ExampleFormat = d.example_format,
+                    GroupSeparator = d.group_separator,
+                    IsoCode = d.iso_code,
+                    SymbolFirst = d.symbol_first,
+                };
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

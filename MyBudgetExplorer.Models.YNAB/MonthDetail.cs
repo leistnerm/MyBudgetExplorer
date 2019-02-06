@@ -41,21 +41,30 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static MonthDetail Load(dynamic d)
         {
-            var month = new MonthDetail
+            try
             {
-                Activity = d.activity,
-                AgeOfMoney = d.age_of_money,
-                Budgeted = d.budgeted,
-                Income = d.income,
-                Month = d.month,
-                Note = d.note,
-                ToBeBudgeted = d.to_be_budgeted,
-            };
+                var month = new MonthDetail
+                {
+                    Activity = d.activity,
+                    AgeOfMoney = d.age_of_money,
+                    Budgeted = d.budgeted,
+                    Income = d.income,
+                    Month = d.month,
+                    Note = d.note,
+                    ToBeBudgeted = d.to_be_budgeted,
+                };
 
-            foreach (var mc in d.categories)
-                month.Categories.Add(Category.Load(mc));
+                foreach (var mc in d.categories)
+                    month.Categories.Add(Category.Load(mc));
 
-            return month;
+                return month;
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
 

@@ -32,18 +32,27 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static CategoryGroupWithCategories Load(dynamic d)
         {
-            var result = new CategoryGroupWithCategories
+            try
             {
-                CategoryGroupId = d.id,
-                Name = d.name,
-                Hidden = d.hidden,
-                Deleted = d.deleted
-            };
+                var result = new CategoryGroupWithCategories
+                {
+                    CategoryGroupId = d.id,
+                    Name = d.name,
+                    Hidden = d.hidden,
+                    Deleted = d.deleted
+                };
 
-            foreach (var c in d.categories)
-                result.Categories.Add(Category.Load(c));
+                foreach (var c in d.categories)
+                    result.Categories.Add(Category.Load(c));
 
-            return result;
+                return result;
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

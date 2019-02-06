@@ -28,10 +28,19 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static CategoryGroupsWrapper Load(dynamic d)
         {
-            var result = new CategoryGroupsWrapper();
-            foreach (var c in d.category_groups)
-                result.CategoryGroups.Add(CategoryGroupWithCategories.Load(c));
-            return result;
+            try
+            {
+                var result = new CategoryGroupsWrapper();
+                foreach (var c in d.category_groups)
+                    result.CategoryGroups.Add(CategoryGroupWithCategories.Load(c));
+                return result;
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

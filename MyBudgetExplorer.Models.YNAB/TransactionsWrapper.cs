@@ -29,13 +29,22 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static TransactionsWrapper Load(dynamic d)
         {
-            var result = new TransactionsWrapper
+            try
             {
-                ServerKnowledge = d.server_knowledge
-            };
-            foreach (var t in d.transactions)
-                result.Transactions.Add(TransactionDetail.Load(t));
-            return result;
+                var result = new TransactionsWrapper
+                {
+                    ServerKnowledge = d.server_knowledge
+                };
+                foreach (var t in d.transactions)
+                    result.Transactions.Add(TransactionDetail.Load(t));
+                return result;
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

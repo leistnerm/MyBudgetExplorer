@@ -43,21 +43,31 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static Account Load(dynamic d)
         {
-            var result = new Account
+            try
             {
-                AccountId = d.id,
-                Balance = d.balance,
-                ClearedBalance = d.cleared_balance,
-                Closed = d.closed,
-                Deleted = d.deleted,
-                Name = d.name,
-                Note = d.note,
-                OnBudget = d.on_budget,
-                TransferPayeeId = d.transfer_payee_id,
-                Type = d.type,
-                UnclearedBalance = d.uncleared_balance,
-            };
-            return result;
+                var result = new Account
+                {
+                    AccountId = d.id,
+                    Balance = d.balance,
+                    ClearedBalance = d.cleared_balance,
+                    Closed = d.closed,
+                    Deleted = d.deleted,
+                    Name = d.name,
+                    Note = d.note,
+                    OnBudget = d.on_budget,
+                    TransferPayeeId = d.transfer_payee_id,
+                    Type = d.type,
+                    UnclearedBalance = d.uncleared_balance,
+                };
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
 

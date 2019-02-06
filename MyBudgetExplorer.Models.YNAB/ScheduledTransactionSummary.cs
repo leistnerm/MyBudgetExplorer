@@ -44,21 +44,30 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static ScheduledTransactionSummary Load(dynamic d)
         {
-            return new ScheduledTransactionSummary
+            try
             {
-                AccountId = d.account_id,
-                Amount = d.amount,
-                CategoryId = d.category_id,
-                DateFirst = d.date_first,
-                DateNext = d.date_next,
-                Deleted = d.deleted,
-                FlagColor = d.flag_color,
-                Frequency = d.frequency,
-                Memo = d.memo,
-                PayeeId = d.payee_id,
-                ScheduledTransactionId = d.id,
-                TransferAccountId = d.transfer_account_id,
-            };
+                return new ScheduledTransactionSummary
+                {
+                    AccountId = d.account_id,
+                    Amount = d.amount,
+                    CategoryId = d.category_id,
+                    DateFirst = d.date_first,
+                    DateNext = d.date_next,
+                    Deleted = d.deleted,
+                    FlagColor = d.flag_color,
+                    Frequency = d.frequency,
+                    Memo = d.memo,
+                    PayeeId = d.payee_id,
+                    ScheduledTransactionId = d.id,
+                    TransferAccountId = d.transfer_account_id,
+                };
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
 

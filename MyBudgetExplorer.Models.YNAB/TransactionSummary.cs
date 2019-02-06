@@ -46,23 +46,32 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static TransactionSummary Load(dynamic d)
         {
-            return new TransactionSummary
+            try
             {
-                AccountId = d.account_id,
-                Amount = d.amount,
-                Approved = d.approved,
-                CategoryId = d.category_id,
-                Cleared = d.cleared,
-                Date = d.date,
-                Deleted = d.deleted,
-                FlagColor = d.flag_color,
-                ImportId = d.import_id,
-                Memo = d.memo,
-                PayeeId = d.payee_id,
-                TransactionId = d.id,
-                TransferAccountId = d.transfer_account_id,
-                TransferTransactionId = d.transfer_transaction_id,
-            };
+                return new TransactionSummary
+                {
+                    AccountId = d.account_id,
+                    Amount = d.amount,
+                    Approved = d.approved,
+                    CategoryId = d.category_id,
+                    Cleared = d.cleared,
+                    Date = d.date,
+                    Deleted = d.deleted,
+                    FlagColor = d.flag_color,
+                    ImportId = d.import_id,
+                    Memo = d.memo,
+                    PayeeId = d.payee_id,
+                    TransactionId = d.id,
+                    TransferAccountId = d.transfer_account_id,
+                    TransferTransactionId = d.transfer_transaction_id,
+                };
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
 
@@ -98,7 +107,7 @@ namespace MyBudgetExplorer.Models.YNAB
             Amount = reader.ReadInt32();
             Approved = reader.ReadBoolean();
             CategoryId = reader.ReadString();
-            Cleared = (TransactionStatus) reader.ReadByte();
+            Cleared = (TransactionStatus)reader.ReadByte();
             Date = reader.ReadDateTime();
             Deleted = reader.ReadBoolean();
             if (reader.ReadBoolean())

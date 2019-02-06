@@ -28,10 +28,19 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static PayeesWrapper Load(dynamic d)
         {
-            var result = new PayeesWrapper();
-            foreach (var p in d.payees)
-                result.Payees.Add(Payee.Load(p));
-            return result;
+            try
+            {
+                var result = new PayeesWrapper();
+                foreach (var p in d.payees)
+                    result.Payees.Add(Payee.Load(p));
+                return result;
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

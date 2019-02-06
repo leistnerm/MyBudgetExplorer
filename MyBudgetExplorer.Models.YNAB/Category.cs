@@ -47,47 +47,56 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static Category Load(dynamic d)
         {
-            var category = new Category
+            try
             {
-                Activity = d.activity,
-                Balance = d.balance,
-                Budgeted = d.budgeted,
-                CategoryGroupId = d.category_group_id,
-                CategoryId = d.id,
-                Deleted = d.deleted,
-                GoalCreationMonth = d.goal_creation_month,
-                GoalPercentageComplete = d.goal_percentage_complete,
-                GoalTarget = 0,
-                GoalTargetMonth = d.goal_target_month,
-                GoalType = d.goal_type,
-                Hidden = d.hidden,
-                Name = d.name,
-                Note = d.note,
-                OriginalCategoryGroupId = d.original_category_group_id,
-            };
+                var category = new Category
+                {
+                    Activity = d.activity,
+                    Balance = d.balance,
+                    Budgeted = d.budgeted,
+                    CategoryGroupId = d.category_group_id,
+                    CategoryId = d.id,
+                    Deleted = d.deleted,
+                    GoalCreationMonth = d.goal_creation_month,
+                    GoalPercentageComplete = d.goal_percentage_complete,
+                    GoalTarget = 0,
+                    GoalTargetMonth = d.goal_target_month,
+                    GoalType = d.goal_type,
+                    Hidden = d.hidden,
+                    Name = d.name,
+                    Note = d.note,
+                    OriginalCategoryGroupId = d.original_category_group_id,
+                };
 
-            // Correct invalid goal target.  Ran into this once.
-            if (d.goal_target != null)
-                try
-                {
-                    category.GoalTarget = d.goal_target;
-                }
-                catch (Exception ex)
-                {
-                    string goalData = string.Empty;
+                // Correct invalid goal target.  Ran into this once.
+                if (d.goal_target != null)
                     try
                     {
-                        goalData = d.goal_target.parent.ToString();
+                        category.GoalTarget = d.goal_target;
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        goalData = d.goal_target.ToString();
+                        string goalData = string.Empty;
+                        try
+                        {
+                            goalData = d.goal_target.parent.ToString();
+                        }
+                        catch
+                        {
+                            goalData = d.goal_target.ToString();
+                        }
+
+                        throw new InvalidCastException($"Could not parse category goal_target.\n\nGoal data: ${goalData}", ex);
                     }
 
-                    throw new InvalidCastException($"Could not parse category goal_target.\n\nGoal data: ${goalData}", ex);
-                }
-
-            return category;
+                return category;
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
 

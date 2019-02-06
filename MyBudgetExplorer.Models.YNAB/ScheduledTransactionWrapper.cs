@@ -27,10 +27,19 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static ScheduledTransactionWrapper Load(dynamic d)
         {
-            return new ScheduledTransactionWrapper
+            try
             {
-                ScheduledTransaction = ScheduledTransactionDetail.Load(d.scheduled_transaction)
-            };
+                return new ScheduledTransactionWrapper
+                {
+                    ScheduledTransaction = ScheduledTransactionDetail.Load(d.scheduled_transaction)
+                };
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }

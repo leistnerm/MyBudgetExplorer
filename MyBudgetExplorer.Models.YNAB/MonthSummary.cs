@@ -33,16 +33,25 @@ namespace MyBudgetExplorer.Models.YNAB
         #region Public Methods
         public static MonthSummary Load(dynamic d)
         {
-            return new MonthSummary
+            try
             {
-                Activity = d.activity,
-                AgeOfMoney = d.age_of_money,
-                Budgeted = d.budgeted,
-                Income = d.income,
-                Month = d.month,
-                Note = d.note,
-                ToBeBudgeted = d.to_be_budgeted,
-            };
+                return new MonthSummary
+                {
+                    Activity = d.activity,
+                    AgeOfMoney = d.age_of_money,
+                    Budgeted = d.budgeted,
+                    Income = d.income,
+                    Month = d.month,
+                    Note = d.note,
+                    ToBeBudgeted = d.to_be_budgeted,
+                };
+            }
+            catch (Exception e)
+            {
+                if (!e.Data.Contains("json"))
+                    e.Data.Add("json", d.ToString());
+                throw e;
+            }
         }
         #endregion
     }
