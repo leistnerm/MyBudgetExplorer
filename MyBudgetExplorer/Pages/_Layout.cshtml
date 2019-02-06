@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"] - My Budget Explorer for YNAB</title>
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/4.2.1/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
+        <a asp-page="/Index" class="navbar-brand">My Budget Explorer for YNAB</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMenu">
+            <ul class="navbar-nav mr-auto">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li class="nav-item"><a class="nav-link" asp-page="/Budget/Index">Overview</a></li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Explore</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown01">
+                            <a asp-page="/Budget/Accounts" class="dropdown-item">Accounts</a>
+                            <a asp-page="/Budget/Categories" class="dropdown-item">Categories</a>
+                            <a asp-page="/Budget/Income" class="dropdown-item">Income</a>
+                            <a asp-page="/Budget/Payees" class="dropdown-item">Payees</a>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a asp-page="/Budget/Settings" class="nav-link">Settings</a></li>
+                    <li class="nav-item"><a asp-page="/Account/Logout" class="nav-link">Logout</a></li>
+                }
+                else
+                {
+                    <li><a asp-page="/Budget/Index" class="nav-link active">Authorize with YNAB</a></li>
+                }
+            </ul>
+        </div>
+    </nav>
+    <main role="main" class="container">
+        <div class="starter-template">
+            @{
+                if (string.IsNullOrWhiteSpace(ViewData["Title"] as string))
+                {
+                    ViewData["Title"] = "Welcome";
+                }
+            }
+            <h2>@ViewData["Title"]</h2>
+            <hr />
+            @if (ViewData.ContainsKey("LastUpdated") && ViewData["LastUpdated"] is DateTime)
+            {
+                var lastUpdate = DateTime.UtcNow.Subtract((DateTime)ViewData["LastUpdated"]);
+                var lastUpdateText = "Last updated ";
+                if (lastUpdate.TotalDays >= 1)
+                {
+                    lastUpdateText += $"{Math.Floor(lastUpdate.TotalDays)} days ";
+                }
+                if (lastUpdate.Hours > 0)
+                {
+                    lastUpdateText += $"{lastUpdate.Hours} hours ";
+                }
+                if (lastUpdate.Minutes > 0)
+                {
+                    lastUpdateText += $"{lastUpdate.Minutes} minutes ";
+                }
+                lastUpdateText += $"{lastUpdate.Seconds} seconds ago.";
+                var path = Context.Request.Path + Context.Request.QueryString;
+                <p>@lastUpdateText | <a asp-page="/Budget/Index" asp-page-handler="Refresh" asp-route-path="@path">Refresh Budget Data</a></p>
+                <hr />
+            }
+            @RenderBody()
+            <hr />
+        </div>
+        <footer>
+            <p>&copy; @DateTime.UtcNow.Year - My Budget Explorer for YNAB | <a asp-page="/Privacy">Privacy</a></p>
+        </footer>
+    </main>
+
+    <environment include="Development">
+        <script src="~/lib/jquery/jquery.js"></script>
+        <script src="~/lib/bootstrap/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
+                asp-fallback-src="~/lib/jquery/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.2.1/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

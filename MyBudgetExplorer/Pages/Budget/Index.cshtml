@@ -1,0 +1,107 @@
+﻿@page
+@model IndexModel
+<div class="card-deck mb-3 text-center">
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+            <h4 class="my-0 font-weight-normal">Current Funding</h4>
+        </div>
+        <div class="card-body">
+            <h4 class="card-subtitle" style="margin-bottom: 1rem">@Model.Current @DateTime.UtcNow.Year</h4>
+            <h1 class="card-title">@Model.CurrentFundingPercentage%</h1>
+            <p>Funded: @Model.CurrentFunding</p>
+            <p>Review the current, scheduled and projected funding for the remainder of the current month.</p>
+        </div>
+        <div class="card-footer">
+            <a asp-page="/Budget/Funding/Index" class="btn btn-lg btn-block btn-primary">Explore @Model.Current Funding</a>
+        </div>
+    </div>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+            <h4 class="my-0 font-weight-normal">Future Funding</h4>
+        </div>
+        <div class="card-body">
+            <h4 class="card-subtitle" style="margin-bottom: 1rem">@Model.Future @DateTime.UtcNow.Year</h4>
+            <h1 class="card-title">@Model.FutureFundingPercentage%</h1>
+            <p>Funded: @Model.FutureFunding</p>
+            <p>Review the current, scheduled and projected funding for the next month.</p>
+        </div>
+        <div class="card-footer">
+            <a asp-page="/Budget/Funding/Future" class="btn btn-lg btn-block btn-primary align-baseline">Explore @Model.Future Funding</a>
+        </div>
+    </div>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+            <h4 class="my-0 font-weight-normal">Next Income</h4>
+        </div>
+        <div class="card-body">
+            <h4 class="card-subtitle" style="margin-bottom: 1rem">@Model.NextIncomeDate</h4>
+            <h1 class="card-title">
+                @Model.NextIncomeAmount
+            </h1>
+            <p>@Model.NextIncomePayee</p>
+            <p>Review scheduled and projected future income and suggested category budgeting.</p>
+        </div>
+        <div class="card-footer">
+            <a asp-page="/Budget/Income" class="btn btn-lg btn-block btn-primary align-baseline">Explore Income</a>
+        </div>
+    </div>
+</div>
+<div class="card-deck mb-3 text-center">
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+            <h4 class="my-0 font-weight-normal">Accounts</h4>
+        </div>
+        <div class="card-body">
+            <p>Review all of your accounts and current, scheduled and projected transactions.</p>
+        </div>
+        <div class="card-footer">
+            <a asp-page="/Budget/Accounts" class="btn btn-lg btn-block btn-primary">Explore Accounts</a>
+        </div>
+    </div>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+            <h4 class="my-0 font-weight-normal">Categories</h4>
+        </div>
+        <div class="card-body">
+            <p>Review each category in your budget and current, scheduled and projected transactions.</p>
+        </div>
+        <div class="card-footer">
+            <a asp-page="/Budget/Categories" class="btn btn-lg btn-block btn-primary">Explore Categories</a>
+        </div>
+    </div>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+            <h4 class="my-0 font-weight-normal">Payees</h4>
+        </div>
+        <div class="card-body">
+            <p>Review each payee in your budget and current, scheduled and projected transactions.</p>
+        </div>
+        <div class="card-footer">
+            <a asp-page="/Budget/Payees" class="btn btn-lg btn-block btn-primary">Explore Payees</a>
+        </div>
+    </div>
+</div>
+<div class="card-deck mb-3 text-center">
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+            <h4 class="my-0 font-weight-normal">Goals</h4>
+        </div>
+        <div class="card-body">
+            <p>Review all of your goals, and optionally setup projected spending.</p>
+        </div>
+        <div class="card-footer">
+            <a asp-page="/Budget/Goals" class="btn btn-lg btn-block btn-primary">Explore Goals</a>
+        </div>
+    </div>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+            <h4 class="my-0 font-weight-normal">Scenarios</h4>
+        </div>
+        <div class="card-body">
+            <p>Explore what your budget would look like if you made some changes.</p>
+        </div>
+        <div class="card-footer">
+            <a asp-page="/Budget/Scenarios" class="btn btn-lg btn-block btn-primary">Explore Scenarios</a>
+        </div>
+    </div>
+</div>

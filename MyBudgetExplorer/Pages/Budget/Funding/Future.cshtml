@@ -1,0 +1,35 @@
+﻿@page
+@model MyBudgetExplorer.Pages.Budget.Funding.FutureModel
+<table class="table table-striped table-bordered table-sm table-hover">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col" width="10%">Date</th>
+            <th scope="col" width="30%">Payee</th>
+            <th scope="col" width="30%">Category</th>
+            <th scope="col" width="10%" style="text-align: right">Amount</th>
+            <th scope="col" width="10%" style="text-align: right">Funded</th>
+            <th scope="col" width="10%" style="text-align: right">Percent</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var outflow in Model.Outflow)
+        {
+            <tr>
+                <td scope="row" style="font-weight: bold">@outflow.Date</td>
+                <td style="font-weight: bold">@outflow.Payee</td>
+                <td style="font-weight: bold">@outflow.Category</td>
+                <td style="font-weight: bold" align="right">@outflow.Amount</td>
+                <td style="font-weight: bold" align="right">@outflow.Funded</td>
+                <td style="font-weight: bold" align="right">@outflow.Percent%</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td style="font-weight: bold" colspan="3">
+            <td style="font-weight: bold" align="right">@Model.Needed</td>
+            <td style="font-weight: bold" align="right">@Model.Funded</td>
+            <td style="font-weight: bold" align="right">@Model.Percent%</td>
+        </tr>
+    </tfoot>
+</table>

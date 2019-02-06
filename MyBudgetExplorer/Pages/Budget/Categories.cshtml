@@ -1,0 +1,25 @@
+﻿@page
+@model MyBudgetExplorer.Pages.Budget.CategoriesModel
+@foreach (var group in Model.CategoryGroups)
+{
+    <table class="table table-striped table-bordered table-sm table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col" width="50%" style="vertical-align: middle">@group.Name</th>
+                <th scope="col" width="25%" style="text-align: right">Budgeted<br />@group.Budgeted</th>
+                <th scope="col" width="25%" style="text-align: right">Available<br />@group.Available</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in group.Categories)
+            {
+                <tr>
+                    <td scope="row"><a asp-page="/Budget/Category" asp-route-id="@category.CategoryId">@category.Name</a></td>
+                    <td style="text-align: right;font-weight:bold;">@category.Budgeted</td>
+                    <td style="text-align: right;font-weight:bold;">@category.Available</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+}

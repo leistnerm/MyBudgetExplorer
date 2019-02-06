@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.3.31.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MyBudgetExplorer.Models.BinarySerialization\MyBudgetExplorer.Models.BinarySerialization.csproj" />
+    <ProjectReference Include="..\MyBudgetExplorer.Models.YNAB\MyBudgetExplorer.Models.YNAB.csproj" />
+  </ItemGroup>
+
+</Project>

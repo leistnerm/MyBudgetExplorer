@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <AWSProjectType>Lambda</AWSProjectType>
+  </PropertyGroup>
+  <ItemGroup>
+	<PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="2.1.0" />
+	<PackageReference Include="AWSSDK.Core" Version="3.3.31.7" />
+	<PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.6" />
+	<PackageReference Include="AWSSDK.S3" Version="3.3.31.15" />
+	<PackageReference Include="AWSSDK.SimpleEmail" Version="3.3.7.30" />
+	<PackageReference Include="AWSXRayRecorder" Version="2.5.0" />
+	<PackageReference Include="BuildBundlerMinifier" Version="2.8.391" />
+	<PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.5" />
+  <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.5" />
+  <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" />
+  <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="1.0.172" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MyBudgetExplorer.Models.BinarySerialization\MyBudgetExplorer.Models.BinarySerialization.csproj" />
+    <ProjectReference Include="..\MyBudgetExplorer.Models.YNAB\MyBudgetExplorer.Models.YNAB.csproj" />
+    <ProjectReference Include="..\MyBudgetExplorer.Models\MyBudgetExplorer.Models.csproj" />
+  </ItemGroup>
+</Project>

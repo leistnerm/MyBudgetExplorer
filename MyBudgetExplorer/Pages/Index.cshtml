@@ -1,0 +1,36 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Welcome";
+    if (User.Identity.IsAuthenticated)
+    {
+        ViewData["Title"] += " Back";
+    }
+}
+<p>This application is something I've written for my own personal use, but I figured I would place it online for others to use as well.</p>
+@if (!User.Identity.IsAuthenticated)
+{
+    <p>
+        <a asp-page="/Budget/Index" class="btn btn-primary">Authorize with YNAB</a>
+    </p>
+}
+<p>
+    Please read the <a asp-page="/Privacy">privacy policy</a>.
+</p>
+<h3>Current Status</h3>
+<ul>
+    <li>Goals other than monthly funding do not currently work.</li>
+    <li>Scheduled transfers do not work correctly.</li>
+    <li>Settings are not configurable.</li>
+    <li>On-budget credit cards are untested and likely do not work.</li>
+</ul>
+<h3>Current Priorities</h3>
+<ol>
+    <li>Configurable settings.</li>
+    <li>Scenario interface.</li>
+    <li>Projected spending interface.</li>
+    <li>Reports</li>
+    <li>Graphs</li>
+    <li>Pretty error messages.</li>
+    <li>On-budget credit card support.</li>
+</ol>
