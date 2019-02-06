@@ -18,8 +18,10 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using Microsoft.Extensions.Configuration;
 using MyBudgetExplorer.Models.YNAB;
 using System;
+using System.Configuration;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -30,13 +32,28 @@ namespace MyBudgetExplorer.Models
 {
     public static class Cache
     {
-        private static RegionEndpoint region = RegionEndpoint.USEast2;
+        private static readonly RegionEndpoint region;
+        private static readonly string bucketName;
+        private static readonly string awsAccessKey;
+        private static readonly string awsSecretKey;
 
-        private static string bucketName = "mybudgetexplorer";
+        static Cache()
+        {
+            var configurationBuilder = new ConfigurationBuilder();
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
+            configurationBuilder.AddJsonFile(path, false);
+            var configuration = configurationBuilder.Build();
+
+            region = RegionEndpoint.USEast2;
+            bucketName = configuration.GetSection("AWS")["Bucket"];
+            awsAccessKey = configuration.GetSection("AWS")["AccessKey"];
+            awsSecretKey = configuration.GetSection("AWS")["SecretKey"];
+        }
+
 
         private static byte[] EncryptAES(byte[] decrypted, byte[] key, byte[] iv)
         {
-            AWSXRayRecorder.Instance.BeginSubsegment("MyBudgetExplorer.Models.Cache.EncrypyAES()");
+            AWSXRayRecorder.Instance.BeginSubsegment("MyBudgetExplorer.Models.Cache.EncryptAES()");
             try
             {
                 // Check arguments.
@@ -169,7 +186,7 @@ namespace MyBudgetExplorer.Models
             }
         }
 
-        public static BudgetDetail GetS3Budget(string userId, string awsAccessKey = "", string awsSecretKey = "")
+        public static BudgetDetail GetS3Budget(string userId)
         {
             AWSSDKHandler.RegisterXRayForAllServices();
             AWSXRayRecorder.Instance.BeginSubsegment("MyBudgetExplorer.Models.Cache.GetS3Budget()");
@@ -236,7 +253,7 @@ namespace MyBudgetExplorer.Models
             }
         }
 
-        public static BudgetDetail GetApiBudget(string accessToken, string userId, string awsAccessKey = "", string awsSecretKey = "")
+        public static BudgetDetail GetApiBudget(string accessToken, string userId)
         {
             AWSSDKHandler.RegisterXRayForAllServices();
             AWSXRayRecorder.Instance.BeginSubsegment("MyBudgetExplorer.Models.Cache.GetApiBudget()");
@@ -296,7 +313,7 @@ namespace MyBudgetExplorer.Models
             }
         }
 
-        public static BudgetDetail GetBudget(string accessToken, string userId, string awsAccessKey = "", string awsSecretKey = "")
+        public static BudgetDetail GetBudget(string accessToken, string userId)
         {
             AWSSDKHandler.RegisterXRayForAllServices();
             AWSXRayRecorder.Instance.BeginSubsegment("MyBudgetExplorer.Models.Cache.GetBudget()");
@@ -308,12 +325,12 @@ namespace MyBudgetExplorer.Models
                     return budget;
 
                 // S3 File
-                budget = GetS3Budget(userId, awsAccessKey, awsSecretKey);
+                budget = GetS3Budget(userId);
                 if (budget != null)
                     return budget;
 
                 // API File
-                budget = GetApiBudget(accessToken, userId, awsAccessKey, awsSecretKey);
+                budget = GetApiBudget(accessToken, userId);
 
                 return budget;
             }
@@ -374,7 +391,7 @@ namespace MyBudgetExplorer.Models
             }
         }
 
-        public static Forecast GetForecast(string accessToken, string userId, string awsAccessKey = "", string awsSecretKey = "")
+        public static Forecast GetForecast(string accessToken, string userId)
         {
             AWSXRayRecorder.Instance.BeginSubsegment("MyBudgetExplorer.Models.Cache.GetForecast()");
             try
@@ -394,7 +411,7 @@ namespace MyBudgetExplorer.Models
                     return forecast;
 
                 // Create Forecast
-                forecast = Forecast.Create(accessToken, userId, awsAccessKey, awsSecretKey);
+                forecast = Forecast.Create(accessToken, userId);
 
                 // Serialize & Encrypt Forecast
                 using (var ms = new MemoryStream())

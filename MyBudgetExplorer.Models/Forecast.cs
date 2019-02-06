@@ -200,9 +200,9 @@ namespace MyBudgetExplorer.Models
         {
             return new Forecast(budget, forecastMonths);
         }
-        public static Forecast Create(string token, string userId, string awsAccessKey, string awsSecretKey, int forecastMonths = 60)
+        public static Forecast Create(string token, string userId, int forecastMonths = 60)
         {
-            var budget = Cache.GetBudget(token, userId, awsAccessKey, awsSecretKey);
+            var budget = Cache.GetBudget(token, userId);
             return Forecast.Create(budget, forecastMonths);
         }
         public List<FundItem> GetIncomeFunding(string transactionId)

@@ -39,7 +39,7 @@ namespace MyBudgetExplorer.Pages.Budget
         public void OnGet()
         {
             string accessToken = HttpContext.GetTokenAsync("access_token").Result;
-            var forecast = Cache.GetForecast(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value, _configuration["AWS:AccessKey"], _configuration["AWS:SecretKey"]);
+            var forecast = Cache.GetForecast(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value);
             ViewData["Title"] = "Explore > Income";
             ViewData["LastUpdated"] = forecast.LastModifiedOn;
             foreach (var t in forecast.Transactions.Where(t => t.ImportId == "scheduled" && t.Amount > 0).OrderBy(t => t.Date).ThenBy(t => t.Amount))

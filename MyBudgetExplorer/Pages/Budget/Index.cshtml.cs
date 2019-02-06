@@ -49,7 +49,7 @@ namespace MyBudgetExplorer.Pages.Budget
         public void OnGet()
         {
             string accessToken = HttpContext.GetTokenAsync("access_token").Result;
-            var forecast = Cache.GetForecast(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value, _configuration["AWS:AccessKey"], _configuration["AWS:SecretKey"]);
+            var forecast = Cache.GetForecast(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             ViewData["Title"] = $"Overview > {forecast.Name}";
 
@@ -95,7 +95,7 @@ namespace MyBudgetExplorer.Pages.Budget
         public IActionResult OnGetRefresh(string path)
         {
             string accessToken = HttpContext.GetTokenAsync("access_token").Result;
-            Cache.GetApiBudget(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value, _configuration["AWS:AccessKey"], _configuration["AWS:SecretKey"]);
+            Cache.GetApiBudget(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value);
             return Redirect(path);
         }
     }

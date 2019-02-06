@@ -43,7 +43,7 @@ namespace MyBudgetExplorer.Pages.Budget
             Id = id;
 
             string accessToken = HttpContext.GetTokenAsync("access_token").Result;
-            var forecast = Cache.GetForecast(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value, _configuration["AWS:AccessKey"], _configuration["AWS:SecretKey"]);
+            var forecast = Cache.GetForecast(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value);
             ViewData["LastUpdated"] = forecast.LastModifiedOn;
 
             var currentDate = forecast.CurrentMonthStart;

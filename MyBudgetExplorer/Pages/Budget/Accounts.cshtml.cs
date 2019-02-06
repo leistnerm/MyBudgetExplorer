@@ -40,7 +40,7 @@ namespace MyBudgetExplorer.Pages.Budget
         {
             ViewData["Title"] = "Explore > Accounts";
             string accessToken = HttpContext.GetTokenAsync("access_token").Result;
-            var forecast = Cache.GetForecast(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value, _configuration["AWS:AccessKey"], _configuration["AWS:SecretKey"]);
+            var forecast = Cache.GetForecast(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value);
             ViewData["LastUpdated"] = forecast.LastModifiedOn;
             foreach (var a in forecast.Accounts.Where(a => !a.Deleted && !a.Closed).OrderBy(a => a.Name))
             {
