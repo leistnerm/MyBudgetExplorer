@@ -57,10 +57,16 @@ namespace MyBudgetExplorer.Pages.Budget
                     Date = t.Date.ToShortDateString(),
                     Payee = forecast.Payees.Single(p => p.PayeeId == t.PayeeId).Name,
                     Amount = t.Amount.ToDisplay(),
-                    CurrentFundingPercentage = Math.Abs(Decimal.Divide(currentFunded, currentNeeded) * 100M).ToString("N2"),
-                    FutureFundingPercentage = Math.Abs(Decimal.Divide(futureFunded, futureNeeded) * 100M).ToString("N2"),
                     Available = null
                 };
+                if (currentNeeded != 0)
+                    income.CurrentFundingPercentage = Math.Abs(Decimal.Divide(currentFunded, currentNeeded) * 100M).ToString("N2");
+                else
+                    income.CurrentFundingPercentage = "0.00";
+                if (futureNeeded != 0)
+                    income.FutureFundingPercentage = Math.Abs(Decimal.Divide(futureFunded, futureNeeded) * 100M).ToString("N2");
+                else
+                    income.FutureFundingPercentage = "0.00";
 
                 var funding = forecast.GetIncomeFunding(t.TransactionId);
                 var available = funding.SingleOrDefault(f => f.CategoryId == forecast.RemainingFundsCategoryId);

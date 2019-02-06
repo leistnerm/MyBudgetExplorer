@@ -65,9 +65,15 @@ namespace MyBudgetExplorer.Pages.Budget
 
             Current = currentDate.ToString("MMMM");
             CurrentFunding = $"{Math.Abs(currentFunded).ToDisplay()} of {Math.Abs(currentNeeded).ToDisplay()}";
-            CurrentFundingPercentage = Math.Abs(Decimal.Divide(currentFunded, currentNeeded) * 100M).ToString("N2");
+            if (currentNeeded != 0)
+                CurrentFundingPercentage = Math.Abs(decimal.Divide(currentFunded, currentNeeded) * 100M).ToString("N2");
+            else
+                CurrentFundingPercentage = "0.00";
             FutureFunding = $"{Math.Abs(futureFunded).ToDisplay()} of {Math.Abs(futureNeeded).ToDisplay()}";
-            FutureFundingPercentage = Math.Abs(Decimal.Divide(futureFunded, futureNeeded) * 100M).ToString("N2");
+            if (futureNeeded != 0)
+                FutureFundingPercentage = Math.Abs(decimal.Divide(futureFunded, futureNeeded) * 100M).ToString("N2");
+            else
+                FutureFundingPercentage = "0.00";
             Future = futureMonth.ToString("MMMM");
 
             var nextIncome = forecast.Transactions.Where(t => t.ImportId == "scheduled" && t.Amount > 0).OrderBy(t => t.Date).FirstOrDefault();
