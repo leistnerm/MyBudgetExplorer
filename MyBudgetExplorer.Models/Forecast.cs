@@ -691,7 +691,9 @@ namespace MyBudgetExplorer.Models
                     if (item.ForecastItemType == ForecastItemType.GoalFunding)
                     {
                         var monthDate = new DateTime(item.Date.Year, item.Date.Month, 1);
-                        var budget = budgeted.Single(b => b.Item1 == monthDate && b.Item2 == item.CategoryId);
+                        var budget = budgeted.SingleOrDefault(b => b.Item1 == monthDate && b.Item2 == item.CategoryId);
+                        if (budget == null)
+                            continue;
                         var adjustment = 0;
                         if (budget.Item3 + item.Remaining >= 0)
                         {
@@ -713,7 +715,9 @@ namespace MyBudgetExplorer.Models
                     else if (item.ForecastItemType != ForecastItemType.ProjectedSpending)
                     {
                         var monthDate = new DateTime(item.Date.Year, item.Date.Month, 1);
-                        var balance = balances.Single(b => b.Item1 == monthDate && b.Item2 == item.CategoryId);
+                        var balance = balances.SingleOrDefault(b => b.Item1 == monthDate && b.Item2 == item.CategoryId);
+                        if (balance == null)
+                            continue;
                         var adjustment = 0;
                         if (balance.Item3 + item.Remaining >= 0)
                         {
