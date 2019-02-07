@@ -17,8 +17,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Memory;
 using MyBudgetExplorer.Models;
-using MyBudgetExplorer.Models.YNAB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,16 +30,25 @@ namespace MyBudgetExplorer.Pages.Budget
     public class IncomeModel : PageModel
     {
         private IConfiguration _configuration;
-        public List<IncomeDataModel> Income { get; set; }
-        public IncomeModel(IConfiguration configuration)
+        private IMemoryCache _cache;
+        public List<IncomeDataModel> Income { get; set; } = new List<IncomeDataModel>();
+        public IncomeModel(IConfiguration configuration, IMemoryCache memoryCache)
         {
             _configuration = configuration;
-            Income = new List<IncomeDataModel>();
+            _cache = memoryCache;
         }
         public void OnGet()
         {
-            string accessToken = HttpContext.GetTokenAsync("access_token").Result;
-            var forecast = Cache.GetForecast(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            Forecast forecast = null;
+            var accessToken = HttpContext.GetTokenAsync("access_token").Result;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            _cache.TryGetValue(userId, out forecast);
+            if (forecast == null)
+            {
+                forecast = Cache.GetForecast(accessToken, userId);
+                _cache.Set(userId, forecast);
+            }
+
             ViewData["Title"] = "Explore > Income";
             ViewData["LastUpdated"] = forecast.LastModifiedOn;
             foreach (var t in forecast.Transactions.Where(t => t.ImportId == "scheduled" && t.Amount > 0).OrderBy(t => t.Date).ThenBy(t => t.Amount))

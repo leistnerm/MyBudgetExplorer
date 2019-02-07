@@ -17,13 +17,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using MyBudgetExplorer.Models;
-using MyBudgetExplorer.Models.YNAB;
 using System;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
-using System.Diagnostics;
 
 namespace MyBudgetExplorer.Pages.Budget
 {
@@ -31,6 +30,7 @@ namespace MyBudgetExplorer.Pages.Budget
     public class IndexModel : PageModel
     {
         private IConfiguration _configuration;
+        private IMemoryCache _cache;
         public string NextIncomeDate { get; set; }
         public string NextIncomePayee { get; set; }
         public string NextIncomeAmount { get; set; }
@@ -41,15 +41,23 @@ namespace MyBudgetExplorer.Pages.Budget
         public string Future { get; set; }
         public string FutureFunding { get; set; }
         public string FutureFundingPercentage { get; set; }
-        public IndexModel(IConfiguration configuration)
+        public IndexModel(IConfiguration configuration, IMemoryCache memoryCache)
         {
             _configuration = configuration;
+            _cache = memoryCache;
         }
 
         public void OnGet()
         {
-            string accessToken = HttpContext.GetTokenAsync("access_token").Result;
-            var forecast = Cache.GetForecast(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            Forecast forecast = null;
+            var accessToken = HttpContext.GetTokenAsync("access_token").Result;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            _cache.TryGetValue<Forecast>(userId, out forecast);
+            if (forecast == null)
+            {
+                forecast = Cache.GetForecast(accessToken, userId);
+                _cache.Set<Forecast>(userId, forecast);
+            }
 
             ViewData["Title"] = $"Overview > {forecast.Name}";
 
@@ -95,7 +103,12 @@ namespace MyBudgetExplorer.Pages.Budget
         public IActionResult OnGetRefresh(string path)
         {
             string accessToken = HttpContext.GetTokenAsync("access_token").Result;
-            Cache.GetApiBudget(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            Cache.GetApiBudget(accessToken, userId);
+
+            _cache.Remove(userId);
+
             return Redirect(path);
         }
     }

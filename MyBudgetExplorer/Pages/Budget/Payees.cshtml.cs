@@ -17,32 +17,40 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using MyBudgetExplorer.Models;
-using MyBudgetExplorer.Models.YNAB;
 
 namespace MyBudgetExplorer.Pages.Budget
 {
     public class PayeesModel : PageModel
     {
         private IConfiguration _configuration;
-        public List<PayeeModel> Payees { get; set; }
+        private IMemoryCache _cache;
+        public List<PayeeModel> Payees { get; set; } = new List<PayeeModel>();
         public DateTime Date { get; set; }
-        public PayeesModel(IConfiguration configuration)
+        public PayeesModel(IConfiguration configuration, IMemoryCache memoryCache)
         {
             _configuration = configuration;
-            Payees = new List<PayeeModel>();
+            _cache = memoryCache;
         }
 
         public void OnGet()
         {
             ViewData["Title"] = "Explore > Payees";
-            string accessToken = HttpContext.GetTokenAsync("access_token").Result;
-            var forecast = Cache.GetForecast(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            Forecast forecast = null;
+            var accessToken = HttpContext.GetTokenAsync("access_token").Result;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            _cache.TryGetValue(userId, out forecast);
+            if (forecast == null)
+            {
+                forecast = Cache.GetForecast(accessToken, userId);
+                _cache.Set(userId, forecast);
+            }
+
             ViewData["LastUpdated"] = forecast.LastModifiedOn;
             Date = forecast.CurrentMonthStart;
 

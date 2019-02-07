@@ -16,11 +16,11 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using MyBudgetExplorer.Models;
-using MyBudgetExplorer.Models.YNAB;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 
 namespace MyBudgetExplorer.Pages.Budget
@@ -29,17 +29,27 @@ namespace MyBudgetExplorer.Pages.Budget
     public class CategoriesModel : PageModel
     {
         private IConfiguration _configuration;
-        public List<CategoryGroupModel> CategoryGroups { get; set; }
-        public CategoriesModel(IConfiguration configuration)
+        private IMemoryCache _cache;
+        public List<CategoryGroupModel> CategoryGroups { get; set; } = new List<CategoryGroupModel>();
+        public CategoriesModel(IConfiguration configuration, IMemoryCache memoryCache)
         {
             _configuration = configuration;
-            CategoryGroups = new List<CategoryGroupModel>();
+            _cache = memoryCache;
         }
         public void OnGet()
         {
             ViewData["Title"] = "Explore > Categories";
-            string accessToken = HttpContext.GetTokenAsync("access_token").Result;
-            var forecast = Cache.GetForecast(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            Forecast forecast = null;
+            var accessToken = HttpContext.GetTokenAsync("access_token").Result;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            _cache.TryGetValue(userId, out forecast);
+            if (forecast == null)
+            {
+                forecast = Cache.GetForecast(accessToken, userId);
+                _cache.Set(userId, forecast);
+            }
+
             ViewData["LastUpdated"] = forecast.LastModifiedOn;
             foreach (var g in forecast.CategoryGroups.Where(g => g.Name != "Internal Master Category" && !g.Deleted))
             {

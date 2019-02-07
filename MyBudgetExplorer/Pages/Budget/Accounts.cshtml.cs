@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using MyBudgetExplorer.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using MyBudgetExplorer.Models;
-using MyBudgetExplorer.Models.YNAB;
-using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 
 namespace MyBudgetExplorer.Pages.Budget
@@ -30,17 +27,27 @@ namespace MyBudgetExplorer.Pages.Budget
     public class AccountsModel : PageModel
     {
         private IConfiguration _configuration;
-        public List<AccountModel> Accounts { get; set; }
-        public AccountsModel(IConfiguration configuration)
+        private IMemoryCache _cache;
+        public List<AccountModel> Accounts { get; set; } = new List<AccountModel>();
+        public AccountsModel(IConfiguration configuration, IMemoryCache memoryCache)
         {
             _configuration = configuration;
-            Accounts = new List<AccountModel>();
+            _cache = memoryCache;
         }
         public void OnGet()
         {
             ViewData["Title"] = "Explore > Accounts";
-            string accessToken = HttpContext.GetTokenAsync("access_token").Result;
-            var forecast = Cache.GetForecast(accessToken, User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            Forecast forecast = null;
+            var accessToken = HttpContext.GetTokenAsync("access_token").Result;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            _cache.TryGetValue(userId, out forecast);
+            if (forecast == null)
+            {
+                forecast = Cache.GetForecast(accessToken, userId);
+                _cache.Set(userId, forecast);
+            }
+
             ViewData["LastUpdated"] = forecast.LastModifiedOn;
             foreach (var a in forecast.Accounts.Where(a => !a.Deleted && !a.Closed).OrderBy(a => a.Name))
             {
