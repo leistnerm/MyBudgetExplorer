@@ -302,6 +302,24 @@ namespace MyBudgetExplorer.Models
                 case Frequency.Every4Weeks:
                     current = current.AddDays(28);
                     break;
+                case Frequency.TwiceAMonth:
+                    // Calculation seems to go:
+                    // If current day is <= 15, add 15 days.
+                    // If that date is in the next month, go to the last day of the current month.
+                    //
+                    // If current day is > 15, move to the next month and subtract 15 days.
+                    if (current.Day <= 15)
+                    {
+                        var month = current.Month;
+                        current = current.AddDays(15);
+                        while (current.Month != month)
+                            current = current.AddDays(-1);
+                    }
+                    else
+                    {
+                        current = current.AddMonths(1).AddDays(-15);
+                    }
+                    break;
                 case Frequency.EveryOtherWeek:
                     current = current.AddDays(14);
                     break;

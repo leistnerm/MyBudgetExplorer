@@ -3,13 +3,12 @@
 @{
     ViewData["Title"] = "Error";
 }
-
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
-
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+<span class="text-danger">An error occurred while processing your request.</span>
+<p>&nbsp;</p>
+<button data-toggle="collapse" data-target="#error">Technical Details</button>
+<p>&nbsp;</p>
+<div id="error" class="collapse">
+    <p>The source code for this application is available on <a href="https://github.com/leistnerm/MyBudgetExplorer" target="_blank">https://github.com/leistnerm/MyBudgetExplorer</a>.</p>
+    <p>Full error details are listed below, a copy of this information has been emailed to the developer as well.</p>
+    @Html.Raw(Model.ErrorDetails)
+</div>

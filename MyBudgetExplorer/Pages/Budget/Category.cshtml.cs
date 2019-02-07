@@ -60,13 +60,22 @@ namespace MyBudgetExplorer.Pages.Budget
                 _cache.Set(userId, forecast);
             }
 
-            ViewData["LastUpdated"] = forecast.LastModifiedOn;
-
             var currentDate = forecast.CurrentMonthStart;
             if (date != null)
                 DateTime.TryParse(date, out currentDate);
 
             currentDate = new DateTime(currentDate.Year, currentDate.Month, 1);
+
+            var month = forecast.Months.Single(m => m.Month == currentDate);
+            var category = month.Categories.SingleOrDefault(c => c.CategoryId == id);
+            if (category == null)
+            {
+                var ex = new ApplicationException("The specified category could not be found.");
+                ex.Data.Add("Category Id", id);
+                throw ex;
+            }
+
+            ViewData["LastUpdated"] = forecast.LastModifiedOn;
 
             Date = currentDate;
             Previous = currentDate.AddMonths(-1).ToShortDateString();
@@ -125,9 +134,6 @@ namespace MyBudgetExplorer.Pages.Budget
                     Transactions.Add(trans);
                 }
             }
-
-            var month = forecast.Months.Single(m => m.Month == currentDate);
-            var category = month.Categories.Single(c => c.CategoryId == id);
 
             Budgeted = category.Budgeted.ToDisplay();
             Activity = category.Activity.ToDisplay();

@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -24,13 +25,27 @@ namespace MyBudgetExplorer.Pages
 {
     public class ErrorModel : PageModel
     {
+        private IMemoryCache _cache;
+
+        public ErrorModel(IMemoryCache memoryCache)
+        {
+            _cache = memoryCache;
+        }
+
         public string RequestId { get; set; }
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-        public void OnGet()
+        public string ErrorDetails { get; set; } = "Technical details are unavailable";
+
+        public void OnGet(string id = "")
         {
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+
+            string details;
+            _cache.TryGetValue(id, out details);
+            if (!string.IsNullOrWhiteSpace(details))
+                ErrorDetails = details;
         }
     }
 }

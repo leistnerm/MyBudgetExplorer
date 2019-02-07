@@ -65,7 +65,14 @@ namespace MyBudgetExplorer.Pages.Budget
             Previous = currentDate.AddMonths(-1).ToShortDateString();
             Next = currentDate.AddMonths(1).ToShortDateString();
 
-            var payee = forecast.Payees.Single(p => p.PayeeId == id);
+            var payee = forecast.Payees.SingleOrDefault(p => p.PayeeId == id);
+            if (payee == null)
+            {
+                var ex = new ApplicationException("The specified payee could not be found.");
+                ex.Data.Add("Payee Id", id);
+                throw ex;
+            }
+
             ViewData["Title"] = $"Explore > {payee.Name}";
 
             var transactions = forecast.Transactions

@@ -13,23 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Caching.Memory;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace MyBudgetExplorer.Pages.Account
 {
     public class LogoutModel : PageModel
     {
+        private IMemoryCache _cache;
+
+        public LogoutModel(IMemoryCache memoryCache)
+        {
+            _cache = memoryCache;
+        }
+
         public async Task<IActionResult> OnGetAsync()
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             // Sign the user out of the cookie authentication middleware (i.e. it will clear the local session cookie)
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            _cache.Remove(userId);
 
             return RedirectToPage("/Index");
         }

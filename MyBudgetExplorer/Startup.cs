@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyBudgetExplorer.Models;
@@ -102,7 +103,7 @@ namespace MyBudgetExplorer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IMemoryCache memoryCache)
         {
             if (env.IsDevelopment() && false)
             {
@@ -114,7 +115,7 @@ namespace MyBudgetExplorer
                 {
                     options.Run(async context =>
                     {
-
+                        var errorId = Guid.NewGuid().ToString();
                         try
                         {
                             var ex = context.Features.Get<IExceptionHandlerFeature>();
@@ -127,6 +128,13 @@ namespace MyBudgetExplorer
                                 err += ex.Error.ToHtmlTable();
 
                                 err += "</body></html>";
+
+                                using (var entry = memoryCache.CreateEntry(errorId))
+                                {
+                                    entry.SetValue(context.Request.ToHtmlTable() + ex.Error.ToHtmlTable());
+                                    entry.SetPriority(CacheItemPriority.Low);
+                                    entry.SetAbsoluteExpiration(new TimeSpan(0, 15, 0));
+                                }
 
                                 using (var client = new AmazonSimpleEmailServiceClient(Configuration["AWS:AccessKey"], Configuration["AWS:SecretKey"], RegionEndpoint.USEast1))
                                 {
@@ -167,9 +175,7 @@ namespace MyBudgetExplorer
                         }
                         catch { }
 
-                        context.Response.Redirect("/Error?r=" +
-                            System.Net.WebUtility.UrlEncode(context.Request.Path + "?" +
-                                                            context.Request.QueryString));
+                        context.Response.Redirect($"/Error?id={errorId}");
                     });
                 });
                 app.UseHsts();

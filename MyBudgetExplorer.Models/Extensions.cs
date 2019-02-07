@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace MyBudgetExplorer.Models
@@ -22,7 +21,7 @@ namespace MyBudgetExplorer.Models
             var sb = new StringBuilder();
             do
             {
-                sb.Append("<table border=\"1\">");
+                sb.Append("<table class=\"table table-striped table-bordered table-sm table-hover\">");
                 sb.Append($"<tr><th colspan=\"2\">{ex.GetType().Name}</th></tr>");
                 sb.Append($"<tr><td>HResult</td><td>{ex.HResult}</td></tr>");
                 sb.Append($"<tr><td>Message</td><td>{ex.Message}</td></tr>");
@@ -47,7 +46,7 @@ namespace MyBudgetExplorer.Models
 
             var sb = new StringBuilder();
 
-            sb.Append("<table border=\"1\">");
+            sb.Append("<table class=\"table table-striped table-bordered table-sm table-hover\">");
             sb.Append($"<tr><td>Path</td><td>{r.Path}</td></tr>");
             sb.Append($"<tr><td>Query String</td><td>{r.QueryString}</td></tr>");
             if (r.HttpContext != null)
@@ -56,6 +55,7 @@ namespace MyBudgetExplorer.Models
                 sb.Append($"<tr><td>Authenticated</td><td>{r.HttpContext.User.Identity.IsAuthenticated}</td></tr>");
             }
             foreach (var header in r.Headers)
+                if (header.Key.ToLower() != "cookie" && !header.Key.ToLower().Contains("ms-aspnetcore-token"))
                 sb.Append($"<tr><td>{header.Key}</td><td>{header.Value}</td></tr>");
             sb.Append("</table><hr />");
 

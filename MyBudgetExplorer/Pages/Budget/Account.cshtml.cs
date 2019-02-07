@@ -65,7 +65,14 @@ namespace MyBudgetExplorer.Pages.Budget
             Previous = currentDate.AddMonths(-1).ToShortDateString();
             Next = currentDate.AddMonths(1).ToShortDateString();
 
-            var account = forecast.Accounts.Single(a => a.AccountId == id);
+            var account = forecast.Accounts.SingleOrDefault(a => a.AccountId == id);
+            if (account == null)
+            {
+                var ex = new ApplicationException("The specified account could not be found.");
+                ex.Data.Add("Account Id", id);
+                throw ex;
+            }
+
             ViewData["Title"] = $"Explore > {account.Name}";
 
             var transactions = forecast.Transactions
