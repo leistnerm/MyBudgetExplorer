@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MyBudgetExplorer.Models;
 using MyBudgetExplorer.Models.YNAB;
 using System;
 using System.Collections.Generic;
@@ -119,40 +120,11 @@ namespace MyBudgetExplorer
                             var ex = context.Features.Get<IExceptionHandlerFeature>();
                             if (ex != null)
                             {
-                                var err = "<html><body>";
-                                err += $"<h1>Error: {ex.Error.Message}</h1>{ex.Error.Source}<hr />{context.Request.Path}<br />";
-                                err += $"QueryString: {context.Request.QueryString}<hr />";
+                                var err = "<html><body><h1>Error</h1>";
 
-                                if (false && context.Request.Form != null)
-                                {
-                                    err += "<table border=\"1\"><tr><td colspan=\"2\">Form collection:</td></tr>";
-                                    foreach (var form in context.Request.Form)
-                                    {
-                                        err += $"<tr><td>{form.Key}</td><td>{form.Value}</td></tr>";
-                                    }
-                                    err += "</table><hr />";
-                                }
+                                err += context.Request.ToHtmlTable();
 
-                                var tempEx = ex.Error;
-                                do
-                                {
-                                    err += "<table border=\"1\">";
-                                    err += $"<tr><th colspan=\"2\">{tempEx.GetType().Name}</th></tr>";
-                                    err += $"<tr><td>HResult</td><td>{tempEx.HResult}</td></tr>";
-                                    err += $"<tr><td>Message</td><td>{tempEx.Message}</td></tr>";
-                                    err += $"<tr><td>Source</td><td>{tempEx.Source}</td></tr>";
-                                    err += $"<tr><td>Target Site</td><td>{tempEx.TargetSite}</td></tr>";
-                                    err += $"<tr><td>Stack Trace</td><td><pre>{tempEx.StackTrace}</pre></td></tr>";
-                                    if (tempEx.Data.Count > 0)
-                                    {
-                                        foreach (var key in tempEx.Data.Keys)
-                                            err += $"<tr><td>Data: {key}</td><td><pre>{tempEx.Data[key]}</pre></td></tr>";
-                                    }
-                                    err += "</table><hr />";
-
-                                    tempEx = tempEx.InnerException;
-                                } while (tempEx != null);
-
+                                err += ex.Error.ToHtmlTable();
 
                                 err += "</body></html>";
 
@@ -194,6 +166,7 @@ namespace MyBudgetExplorer
                             }
                         }
                         catch { }
+
                         context.Response.Redirect("/Error?r=" +
                             System.Net.WebUtility.UrlEncode(context.Request.Path + "?" +
                                                             context.Request.QueryString));
