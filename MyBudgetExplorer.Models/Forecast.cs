@@ -234,6 +234,9 @@ namespace MyBudgetExplorer.Models
         /// <returns>Items funded with this transaction.</returns>
         public List<FundItem> GetIncomeFunding(string transactionId)
         {
+            if (!IncomeFunding.ContainsKey(transactionId))
+                return new List<FundItem>();
+
             return IncomeFunding[transactionId];
         }
         /// <summary>

@@ -69,11 +69,11 @@ namespace MyBudgetExplorer.Pages.Budget
                     Available = null
                 };
                 if (currentNeeded != 0)
-                    income.CurrentFundingPercentage = Math.Abs(Decimal.Divide(currentFunded, currentNeeded) * 100M).ToString("N2");
+                    income.CurrentFundingPercentage = Math.Abs(decimal.Divide(currentFunded, currentNeeded) * 100M).ToString("N2");
                 else
                     income.CurrentFundingPercentage = "0.00";
                 if (futureNeeded != 0)
-                    income.FutureFundingPercentage = Math.Abs(Decimal.Divide(futureFunded, futureNeeded) * 100M).ToString("N2");
+                    income.FutureFundingPercentage = Math.Abs(decimal.Divide(futureFunded, futureNeeded) * 100M).ToString("N2");
                 else
                     income.FutureFundingPercentage = "0.00";
 

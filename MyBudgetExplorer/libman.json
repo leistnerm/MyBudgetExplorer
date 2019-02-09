@@ -4,6 +4,16 @@
   "defaultDestination": "wwwroot/lib",
   "libraries": [
     {
+      "library": "Chart.js@2.7.3",
+      "files": [
+        "Chart.js",
+        "Chart.min.js",
+        "Chart.bundle.js",
+        "Chart.bundle.min.js"
+      ],
+      "destination": "wwwroot/lib/chartjs"
+    },
+    {
       "library": "jquery@3.3.1",
       "files": [
         "core.js",
