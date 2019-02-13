@@ -1271,15 +1271,25 @@ namespace MyBudgetExplorer.Models
 
             var categories = Categories.ToDictionary(k => k.CategoryId, v => v.Name);
 
-            return transactions.Select(t => new FundStatus
+            foreach (var t in transactions)
             {
-                Amount = t.Amount,
-                CategoryName = categories.ContainsKey(t.CategoryId) ? categories[t.CategoryId] : "[Category Not Found]",
-                Date = t.Date,
-                Funded = t.Funded,
-                Id = t.CategoryId,
-                PayeeName = t.PayeeName
-            }).ToList();
+                var fundStatus = new FundStatus
+                {
+                    Amount = t.Amount,
+                    Date = t.Date,
+                    Funded = t.Funded,
+                    Id = t.CategoryId,
+                    PayeeName = t.PayeeName
+                };
+                if (!string.IsNullOrWhiteSpace(t.CategoryId) && categories.ContainsKey(t.CategoryId))
+                    fundStatus.CategoryName = categories[t.CategoryId];
+                else
+                    fundStatus.CategoryName = "[Category Not Found]";
+
+                results.Add(fundStatus);
+            }
+
+            return results;
         }
         #endregion
 

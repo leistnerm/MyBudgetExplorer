@@ -26,22 +26,18 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static BudgetSettings Load(dynamic d)
+        public static BudgetSettings Load(dynamic dyn)
         {
-            try
+            Func<dynamic, BudgetSettings> func = (d) =>
             {
                 return new BudgetSettings
                 {
                     CurrencyFormat = CurrencyFormat.Load(d.currency_format),
                     DateFormat = DateFormat.Load(d.date_format)
                 };
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
     }

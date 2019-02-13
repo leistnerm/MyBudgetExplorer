@@ -31,9 +31,9 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static BudgetSummary Load(dynamic d)
+        public static BudgetSummary Load(dynamic dyn)
         {
-            try
+            Func<dynamic, BudgetSummary> func = (d) =>
             {
                 return new BudgetSummary
                 {
@@ -45,13 +45,9 @@ namespace MyBudgetExplorer.Models.YNAB
                     LastMonth = d.last_month,
                     Name = d.name,
                 };
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
     }

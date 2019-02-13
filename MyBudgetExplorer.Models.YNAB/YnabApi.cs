@@ -341,6 +341,24 @@ namespace MyBudgetExplorer.Models.YNAB
         {
             return UserResponse.Load(Connect("GET", "/user"));
         }
+
+        public static T ProcessApiResult<T>(dynamic result, Func<dynamic, T> func) where T : class
+        {
+            try
+            {
+                return func(result);
+            }
+            catch (ApiResultException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                var ex = new ApiResultException("Error processing YNAB API results.", e);
+                ex.Data.Add("json", result.ToString());
+                throw ex;
+            }
+        }
         #endregion
     }
 }

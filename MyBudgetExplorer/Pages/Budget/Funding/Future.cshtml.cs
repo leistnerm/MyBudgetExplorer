@@ -64,15 +64,19 @@ namespace MyBudgetExplorer.Pages.Budget.Funding
             
             foreach (var outflow in expenses)
             {
-                    Outflow.Add(new OutflowModel
-                    {
-                        Amount = outflow.Amount.ToDisplay(),
-                        Category = outflow.CategoryName,
-                        Date = outflow.Date.ToShortDateString(),
-                        Funded = outflow.Funded.ToDisplay(),
-                        Payee = outflow.PayeeName,
-                        Percent = Math.Abs(Decimal.Divide(outflow.Funded, outflow.Amount) * 100M).ToString("N2")
-                    });
+                var of = new OutflowModel
+                {
+                    Amount = outflow.Amount.ToDisplay(),
+                    Category = outflow.CategoryName,
+                    Date = outflow.Date.ToShortDateString(),
+                    Funded = outflow.Funded.ToDisplay(),
+                    Payee = outflow.PayeeName,
+                    Percent = "N/A"
+                };
+                if (outflow.Amount != 0)
+                    of.Percent = Math.Abs(Decimal.Divide(outflow.Funded, outflow.Amount) * 100M).ToString("N2");
+
+                Outflow.Add(of);
             }
             var funded = expenses.Sum(e => e.Funded);
             Funded = funded.ToDisplay();
@@ -80,7 +84,10 @@ namespace MyBudgetExplorer.Pages.Budget.Funding
             var needed = expenses.Sum(e => e.Amount);
             Needed = needed.ToDisplay();
 
-            Percent = Math.Abs(Decimal.Divide(funded, needed) * 100M).ToString("N2");
+            if (needed != 0)
+                Percent = Math.Abs(Decimal.Divide(funded, needed) * 100M).ToString("N2");
+            else
+                Percent = "N/A";
         }
 
         public class OutflowModel

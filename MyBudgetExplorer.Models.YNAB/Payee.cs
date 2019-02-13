@@ -34,9 +34,9 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static Payee Load(dynamic d)
+        public static Payee Load(dynamic dyn)
         {
-            try
+            Func<dynamic, Payee> func = (d) =>
             {
                 var payee = new Payee
                 {
@@ -46,13 +46,9 @@ namespace MyBudgetExplorer.Models.YNAB
                     TransferAccountId = d.transfer_account_id,
                 };
                 return payee;
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
 

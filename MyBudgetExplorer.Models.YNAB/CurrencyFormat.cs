@@ -32,9 +32,9 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static CurrencyFormat Load(dynamic d)
+        public static CurrencyFormat Load(dynamic dyn)
         {
-            try
+            Func<dynamic, CurrencyFormat> func = (d) =>
             {
                 return new CurrencyFormat
                 {
@@ -47,13 +47,9 @@ namespace MyBudgetExplorer.Models.YNAB
                     IsoCode = d.iso_code,
                     SymbolFirst = d.symbol_first,
                 };
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
     }

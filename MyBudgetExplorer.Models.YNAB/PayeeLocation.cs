@@ -35,9 +35,9 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static PayeeLocation Load(dynamic d)
+        public static PayeeLocation Load(dynamic dyn)
         {
-            try
+            Func<dynamic, PayeeLocation> func = (d) =>
             {
                 var location = new PayeeLocation
                 {
@@ -48,13 +48,9 @@ namespace MyBudgetExplorer.Models.YNAB
                     PayeeLocationId = d.id,
                 };
                 return location;
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
 

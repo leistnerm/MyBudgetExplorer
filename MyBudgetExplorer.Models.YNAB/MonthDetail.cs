@@ -39,9 +39,9 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static MonthDetail Load(dynamic d)
+        public static MonthDetail Load(dynamic dyn)
         {
-            try
+            Func<dynamic, MonthDetail> func = (d) =>
             {
                 var month = new MonthDetail
                 {
@@ -58,13 +58,9 @@ namespace MyBudgetExplorer.Models.YNAB
                     month.Categories.Add(Category.Load(mc));
 
                 return month;
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
 

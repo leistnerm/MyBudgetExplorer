@@ -26,21 +26,17 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static MonthSummariesWrapper Load(dynamic d)
+        public static MonthSummariesWrapper Load(dynamic dyn)
         {
-            try
+            Func<dynamic, MonthSummariesWrapper> func = (d) =>
             {
                 var result = new MonthSummariesWrapper();
                 foreach (var m in d.months)
                     result.Months.Add(MonthSummary.Load(m));
                 return result;
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
     }

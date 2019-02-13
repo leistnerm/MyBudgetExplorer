@@ -34,12 +34,16 @@ namespace MyBudgetExplorer.Pages.Account
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            // Remove the user data from cache.
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                _cache.Remove(userId);
+            }
+            catch { }
 
             // Sign the user out of the cookie authentication middleware (i.e. it will clear the local session cookie)
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-            _cache.Remove(userId);
 
             return RedirectToPage("/Index");
         }

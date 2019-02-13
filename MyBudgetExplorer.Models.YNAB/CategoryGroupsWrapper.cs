@@ -26,21 +26,17 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static CategoryGroupsWrapper Load(dynamic d)
+        public static CategoryGroupsWrapper Load(dynamic dyn)
         {
-            try
+            Func<dynamic, CategoryGroupsWrapper> func = (d) =>
             {
                 var result = new CategoryGroupsWrapper();
                 foreach (var c in d.category_groups)
                     result.CategoryGroups.Add(CategoryGroupWithCategories.Load(c));
                 return result;
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
     }

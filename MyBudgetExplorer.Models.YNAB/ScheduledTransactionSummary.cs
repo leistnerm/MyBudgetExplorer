@@ -42,9 +42,9 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static ScheduledTransactionSummary Load(dynamic d)
+        public static ScheduledTransactionSummary Load(dynamic dyn)
         {
-            try
+            Func<dynamic, ScheduledTransactionSummary> func = (d) =>
             {
                 return new ScheduledTransactionSummary
                 {
@@ -61,13 +61,9 @@ namespace MyBudgetExplorer.Models.YNAB
                     ScheduledTransactionId = d.id,
                     TransferAccountId = d.transfer_account_id,
                 };
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
 

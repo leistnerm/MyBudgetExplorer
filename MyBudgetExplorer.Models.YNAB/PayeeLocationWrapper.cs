@@ -25,21 +25,17 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static PayeeLocationWrapper Load(dynamic d)
+        public static PayeeLocationWrapper Load(dynamic dyn)
         {
-            try
+            Func<dynamic, PayeeLocationWrapper> func = (d) =>
             {
                 return new PayeeLocationWrapper
                 {
                     PayeeLocation = PayeeLocation.Load(d.payee_location)
                 };
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
     }

@@ -1,0 +1,73 @@
+﻿@page
+@model MyBudgetExplorer.Pages.Budget.CashFlow.IndexModel
+@{
+    var colors = new[] { "blue", "green", "red", "gray", "navy", "orange" };
+    var accounts = Model.Accounts.OrderBy(a => a.Item2).ToList();
+}
+@if (Request.Method == "GET")
+{
+    <form method="post">
+        <b>Select Accounts:</b><br />
+        @foreach (var account in accounts)
+        {
+            <input type="checkbox" name="accounts" value="@account.Item1" /> @account.Item2<br />
+        }
+        <br />
+        <input type="submit" value="Display" />
+    </form>
+}
+else
+{
+    <div id="chartparent">
+        <canvas id="myChart"></canvas>
+    </div>
+    <script src="~/lib/chartjs/Chart.bundle.js"></script>
+    <script>
+        var currentWindowHeight = window.innerHeight
+        var canvas = document.getElementById("myChart")
+        var chartHeight = currentWindowHeight - 300
+        var lineChartParent = document.getElementById('chartparent')
+        canvas.width = lineChartParent.clientWidth;
+        canvas.height = chartHeight;
+    var ctx = document.getElementById("myChart").getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [
+                @for (int i = 0; i < accounts.Count; i++)
+                {
+                    var account = accounts[i];
+                    var colorIndex = i;
+                    while (colorIndex >= colors.Length)
+                    {
+                        colorIndex -= colors.Length;
+                    }
+                    <text>{ label: '@account.Item2', pointRadius: 2, borderColor: '@colors[colorIndex]', data: [</text>
+                    var items = Model.GraphValues.Where(g => g.Item2 == account.Item1);
+                    foreach (var item in items)
+                    {
+                        <text>{ x: new Date('@item.Item1'), y: @decimal.Divide(item.Item3, 1000L)},</text>
+                    }
+                    <text>]},</text>
+                }
+            ]
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    time: {
+                        unit: 'month'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    ticks: {
+                        suggestedMin: 0
+                    }
+                }]
+            }
+        }
+    });
+    </script>
+}

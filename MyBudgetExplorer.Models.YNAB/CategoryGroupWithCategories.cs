@@ -30,9 +30,9 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static CategoryGroupWithCategories Load(dynamic d)
+        public static CategoryGroupWithCategories Load(dynamic dyn)
         {
-            try
+            Func<dynamic, CategoryGroupWithCategories> func = (d) =>
             {
                 var result = new CategoryGroupWithCategories
                 {
@@ -46,13 +46,9 @@ namespace MyBudgetExplorer.Models.YNAB
                     result.Categories.Add(Category.Load(c));
 
                 return result;
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
     }

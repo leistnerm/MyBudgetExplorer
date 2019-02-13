@@ -41,11 +41,11 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static Account Load(dynamic d)
+        public static Account Load(dynamic dyn)
         {
-            try
+            Func<dynamic, Account> func = (d) =>
             {
-                var result = new Account
+                Account result = new Account
                 {
                     AccountId = d.id,
                     Balance = d.balance,
@@ -59,15 +59,10 @@ namespace MyBudgetExplorer.Models.YNAB
                     Type = d.type,
                     UnclearedBalance = d.uncleared_balance,
                 };
-
                 return result;
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
 

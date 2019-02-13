@@ -38,9 +38,9 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static ScheduledSubTransaction Load(dynamic d)
+        public static ScheduledSubTransaction Load(dynamic dyn)
         {
-            try
+            Func<dynamic, ScheduledSubTransaction> func = (d) =>
             {
                 var st = new ScheduledSubTransaction
                 {
@@ -54,13 +54,9 @@ namespace MyBudgetExplorer.Models.YNAB
                     TransferAccountId = d.transfer_account_id,
                 };
                 return st;
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
 

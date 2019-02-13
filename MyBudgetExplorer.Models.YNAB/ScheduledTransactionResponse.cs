@@ -25,21 +25,17 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static ScheduledTransactionResponse Load(dynamic d)
+        public static ScheduledTransactionResponse Load(dynamic dyn)
         {
-            try
+            Func<dynamic, ScheduledTransactionResponse> func = (d) =>
             {
                 return new ScheduledTransactionResponse
                 {
                     Data = ScheduledTransactionWrapper.Load(d.data)
                 };
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
     }

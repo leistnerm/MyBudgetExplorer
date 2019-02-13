@@ -34,9 +34,9 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static CategoryGroup Load(dynamic d)
+        public static CategoryGroup Load(dynamic dyn)
         {
-            try
+            Func<dynamic, CategoryGroup> func = (d) =>
             {
                 return new CategoryGroup
                 {
@@ -45,13 +45,9 @@ namespace MyBudgetExplorer.Models.YNAB
                     Hidden = d.hidden,
                     Name = d.name,
                 };
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
 

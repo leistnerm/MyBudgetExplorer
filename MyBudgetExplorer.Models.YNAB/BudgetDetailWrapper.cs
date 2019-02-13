@@ -26,22 +26,18 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static BudgetDetailWrapper Load(dynamic d)
+        public static BudgetDetailWrapper Load(dynamic dyn)
         {
-            try
+            Func<dynamic, BudgetDetailWrapper> func = (d) =>
             {
                 return new BudgetDetailWrapper
                 {
                     ServerKnowledge = d.server_knowledge,
                     Budget = BudgetDetail.Load(d.budget)
                 };
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
     }

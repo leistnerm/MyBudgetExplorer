@@ -41,9 +41,9 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static ScheduledTransactionDetail Load(dynamic d)
+        public static ScheduledTransactionDetail Load(dynamic dyn)
         {
-            try
+            Func<dynamic, ScheduledTransactionDetail> func = (d) =>
             {
                 var result = new ScheduledTransactionDetail
                 {
@@ -66,13 +66,9 @@ namespace MyBudgetExplorer.Models.YNAB
                 foreach (var s in d.subtransactions)
                     result.SubTransactions.Add(ScheduledSubTransaction.Load(s));
                 return result;
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
     }

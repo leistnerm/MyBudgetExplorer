@@ -30,6 +30,29 @@ namespace MyBudgetExplorer.Models
 
         public Settings()
         {
+            // Grocery
+            ProjectedSpendingScenarios.Add(new ProjectedSpendingScenario
+            {
+                Amount = -900000,
+                Days = new[] { 1, 8, 15, 22 },
+                IsEnabled = true,
+                IsExactAmount = true,
+                ScenarioId = Guid.NewGuid().ToString(),
+                CategoryId = "9e6ac45f-2b3d-469f-9b4e-ece904d480fd",
+                AccountId = "0688cd93-c997-4c8f-ac5e-9da26f40c4cd"
+            });
+
+            // Gas
+            ProjectedSpendingScenarios.Add(new ProjectedSpendingScenario
+            {
+                Amount = -300000,
+                Days = new[] { 1, 8, 15, 22 },
+                IsEnabled = true,
+                IsExactAmount = true,
+                ScenarioId = Guid.NewGuid().ToString(),
+                CategoryId = "fe7fec51-e0f1-40f3-9e54-8d7ce56f83d4",
+                AccountId = "0688cd93-c997-4c8f-ac5e-9da26f40c4cd"
+            });
         }
     }
 }

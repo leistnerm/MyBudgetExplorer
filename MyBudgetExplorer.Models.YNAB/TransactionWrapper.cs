@@ -25,21 +25,17 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static TransactionWrapper Load(dynamic d)
+        public static TransactionWrapper Load(dynamic dyn)
         {
-            try
+            Func<dynamic, TransactionWrapper> func = (d) =>
             {
                 return new TransactionWrapper
                 {
                     Transaction = TransactionDetail.Load(d.transaction)
                 };
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
     }

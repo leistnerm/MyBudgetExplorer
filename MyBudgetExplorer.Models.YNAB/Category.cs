@@ -30,7 +30,7 @@ namespace MyBudgetExplorer.Models.YNAB
         public string CategoryId { get; set; }
         public bool Deleted { get; set; }
         public string GoalCreationMonth { get; set; }
-        public int GoalPercentageComplete { get; set; }
+        public int? GoalPercentageComplete { get; set; }
         public long GoalTarget { get; set; }
         public string GoalTargetMonth { get; set; }
         public GoalType? GoalType { get; set; }
@@ -45,9 +45,9 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static Category Load(dynamic d)
+        public static Category Load(dynamic dyn)
         {
-            try
+            Func<dynamic, Category> func = (d) =>
             {
                 var category = new Category
                 {
@@ -90,13 +90,9 @@ namespace MyBudgetExplorer.Models.YNAB
                     }
 
                 return category;
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
 
@@ -113,7 +109,8 @@ namespace MyBudgetExplorer.Models.YNAB
             Deleted = reader.ReadBoolean();
             Hidden = reader.ReadBoolean();
             GoalCreationMonth = reader.ReadString();
-            GoalPercentageComplete = reader.ReadInt32();
+            if (reader.ReadBoolean())
+                GoalPercentageComplete = reader.ReadInt32();
             GoalTarget = reader.ReadInt64();
             GoalTargetMonth = reader.ReadString();
             if (reader.ReadBoolean())
@@ -135,7 +132,9 @@ namespace MyBudgetExplorer.Models.YNAB
             writer.Write(Deleted);
             writer.Write(Hidden);
             writer.WriteString(GoalCreationMonth);
-            writer.Write(GoalPercentageComplete);
+            writer.Write(GoalPercentageComplete.HasValue);
+            if (GoalPercentageComplete.HasValue)
+                writer.Write(GoalPercentageComplete.Value);
             writer.Write(GoalTarget);
             writer.WriteString(GoalTargetMonth);
             writer.Write(GoalType.HasValue);

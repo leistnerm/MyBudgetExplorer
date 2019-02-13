@@ -43,9 +43,9 @@ namespace MyBudgetExplorer.Models.YNAB
         #endregion
 
         #region Public Methods
-        public static TransactionDetail Load(dynamic d)
+        public static TransactionDetail Load(dynamic dyn)
         {
-            try
+            Func<dynamic, TransactionDetail> func = (d) =>
             {
                 var result = new TransactionDetail
                 {
@@ -71,13 +71,9 @@ namespace MyBudgetExplorer.Models.YNAB
                     result.SubTransactions.Add(SubTransaction.Load(s));
 
                 return result;
-            }
-            catch (Exception e)
-            {
-                if (!e.Data.Contains("json"))
-                    e.Data.Add("json", d.ToString());
-                throw e;
-            }
+            };
+
+            return YnabApi.ProcessApiResult(dyn, func);
         }
         #endregion
     }
