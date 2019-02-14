@@ -3,15 +3,57 @@
 @{
     var colors = new[] { "blue", "green", "red", "gray", "navy", "orange" };
     var accounts = Model.Accounts.OrderBy(a => a.Item2).ToList();
+    var startMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToShortDateString();
+    var endMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(4).ToShortDateString();
 }
 @if (Request.Method == "GET")
 {
     <form method="post">
-        <b>Select Accounts:</b><br />
-        @foreach (var account in accounts)
-        {
-            <input type="checkbox" name="accounts" value="@account.Item1" /> @account.Item2<br />
-        }
+        <table>
+            <tr>
+                <td>
+                    <b>Select Accounts:</b><br />
+                    @foreach (var account in accounts)
+                    {
+                        <input type="checkbox" name="accounts" value="@account.Item1" /> @account.Item2<br />
+                    }
+                </td>
+                <td>
+                    <b>Start Month:</b><br />
+                    <select name="start">
+                        @foreach (var start in Model.StartDates)
+                        {
+                            if (startMonth == start.Item1)
+                            {
+                                <option value="@start.Item1" selected="selected">@start.Item2</option>
+                            }
+                            else
+                            {
+                                <option value="@start.Item1">@start.Item2</option>
+                            }
+                        }
+                    </select>
+                </td>
+                <td>
+                    <b>End Month:</b><br />
+                    <select name="end">
+                        @foreach (var end in Model.EndDates)
+                        {
+                            if (endMonth == end.Item1)
+                            {
+                                <option value="@end.Item1" selected="selected">@end.Item2</option>
+                            }
+                            else
+                            {
+                                <option value="@end.Item1">@end.Item2</option>
+                            }
+                        }
+                    </select>
+                </td>
+            </tr>
+
+        </table>
+
         <br />
         <input type="submit" value="Display" />
     </form>

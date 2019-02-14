@@ -17,6 +17,8 @@ namespace MyBudgetExplorer.Pages.Budget.CashFlow
 
         public List<Tuple<string, string, long>> GraphValues { get; set; } = new List<Tuple<string, string, long>>();
         public List<Tuple<string, string>> Accounts { get; set; } = new List<Tuple<string, string>>();
+        public List<Tuple<string, string>> StartDates { get; set; } = new List<Tuple<string, string>>();
+        public List<Tuple<string, string>> EndDates { get; set; } = new List<Tuple<string, string>>();
 
         public IndexModel(IConfiguration configuration, IMemoryCache memoryCache)
         {
@@ -38,37 +40,23 @@ namespace MyBudgetExplorer.Pages.Budget.CashFlow
                 _cache.Set(userId, forecast);
             }
 
+            ViewData["LastUpdated"] = forecast.LastModifiedOn;
+
             foreach (var account in forecast.Accounts)
                 Accounts.Add(new Tuple<string, string>(account.AccountId, account.Name));
 
-            var accountBalances = forecast.Accounts.ToDictionary(k => k.AccountId, v => 0L);
-            var transactionsByDay = forecast.Transactions.GroupBy(g => g.Date.Date).ToDictionary(k => k.Key, v => v.ToList());
-            var day = forecast.Transactions.Min(t => t.Date.Date);
-            while (day < forecast.ForecastUntil)
-            {
-                if (day > new DateTime(2019, 5, 31))
-                    break;
-
-                if (transactionsByDay.ContainsKey(day))
-                {
-                    var accountActivity = transactionsByDay[day].GroupBy(g => g.AccountId).ToDictionary(k => k.Key, v => v.Sum(t => t.Amount));
-                    foreach (var accountId in accountActivity.Keys)
-                        accountBalances[accountId] += accountActivity[accountId];
-                }
-
-                foreach (var accountId in accountBalances.Keys)
-                    GraphValues.Add(new Tuple<string, string, long>(day.ToShortDateString(), accountId, accountBalances[accountId]));
-
-                day = day.AddDays(1);
-            }
-
-            GraphValues = GraphValues.Where(t => DateTime.Parse(t.Item1) > new DateTime(2019, 2, 1)).ToList();
-
-            ViewData["LastUpdated"] = forecast.LastModifiedOn;
+            StartDates = forecast.Months.OrderBy(m => m.Month).Select(m => new Tuple<string, string>(m.Month.ToShortDateString(), m.Month.ToString("MMM yy"))).ToList();
+            EndDates = forecast.Months.OrderBy(m => m.Month).Select(m => new Tuple<string, string>(m.Month.AddMonths(1).ToShortDateString(), m.Month.ToString("MMM yy"))).ToList();
         }
 
-        public void OnPost(List<string> accounts)
+        public void OnPost(List<string> accounts, string start = "", string end = "")
         {
+            DateTime startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            DateTime.TryParse(start, out startDate);
+
+            DateTime endDate = startDate.AddMonths(4);
+            DateTime.TryParse(end, out endDate);
+
             ViewData["Title"] = $"Explore > Cash Flow";
 
             Forecast forecast = null;
@@ -89,7 +77,7 @@ namespace MyBudgetExplorer.Pages.Budget.CashFlow
             var day = forecast.Transactions.Min(t => t.Date.Date);
             while (day < forecast.ForecastUntil)
             {
-                if (day > new DateTime(2019, 5, 31))
+                if (day >= endDate)
                     break;
 
                 if (transactionsByDay.ContainsKey(day))
@@ -105,7 +93,7 @@ namespace MyBudgetExplorer.Pages.Budget.CashFlow
                 day = day.AddDays(1);
             }
 
-            GraphValues = GraphValues.Where(t => DateTime.Parse(t.Item1) > new DateTime(2019, 2, 1)).ToList();
+            GraphValues = GraphValues.Where(t => DateTime.Parse(t.Item1) >= startDate).ToList();
 
             ViewData["LastUpdated"] = forecast.LastModifiedOn;
         }
